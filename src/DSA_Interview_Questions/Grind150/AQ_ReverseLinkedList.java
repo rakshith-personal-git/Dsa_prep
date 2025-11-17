@@ -40,8 +40,21 @@ public class AQ_ReverseLinkedList {
 
         return previousNode;
     }
-
     //TC is O(N) and SC is O(1)
+
+
+
+    //recursive solution
+    public static ListNode reverseListRecursive(ListNode head) {
+        if (head == null || head.next == null) {
+            return head; // Base case: empty list or single node
+        }
+        ListNode newHead = reverseListRecursive(head.next); // Recur to the end
+        head.next.next = head; // Reverse the link
+        head.next = null;      // Sever old forward link
+        return newHead;        // Return new head to all previous recursions
+    }
+    //TC is O(N) and SC is O(N)
 
 
 }
