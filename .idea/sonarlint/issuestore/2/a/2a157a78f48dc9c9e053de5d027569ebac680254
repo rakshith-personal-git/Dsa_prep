@@ -1,0 +1,9 @@
+
+n	java:S101"MRename this class name to match the regular expression '^[A-Z][a-zA-Z0-9]*$'.(˜çº‡ùÿÿÿÿ8õÎı×2
+{	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(¦Ï¬âÿÿÿÿÿ8öÎı×2
+d
+java:S2094"BRemove this empty class, write its code or make it an "interface".(˜çº‡ùÿÿÿÿ8´¸Ø2
+L
+java:S1128"/Remove this unused import 'java.util.Calendar'.(ÿÛö´8¶¸Ø2
+H
+java:S1128"+Remove this unused import 'java.util.Date'.(¸…¼ü8¶¸Ø2

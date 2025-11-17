@@ -1,0 +1,9 @@
+
+u	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(„Ñ(8«¦ü“Ü1
+Z	java:S106<"9Replace this use of System.out or System.err by a logger.(À÷¶Àûÿÿÿÿ8Ö¦ü“Ü1
+[
+java:S1155g">Use isEmpty() to check whether the collection is empty or not.(“Æ…¦8×¦ü“Ü1
+M
+java:S1128"0Remove this unused import 'java.util.ArrayList'.(÷‰îƒ8Ø¦ü“Ü1
+M
+java:S1128"+Remove this unused import 'java.util.List'.(Õë±Äøÿÿÿÿ8Ø¦ü“Ü1

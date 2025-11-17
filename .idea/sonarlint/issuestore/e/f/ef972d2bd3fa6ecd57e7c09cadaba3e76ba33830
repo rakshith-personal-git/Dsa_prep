@@ -1,0 +1,15 @@
+
+J
+java:S3740*"/Provide the parametrized type for this generic.(…ø‡Öÿÿÿÿÿ
+J
+java:S3740+"/Provide the parametrized type for this generic.(½ÅÆòûÿÿÿÿ
+g	java:S101"MRename this class name to match the regular expression '^[A-Z][a-zA-Z0-9]*$'.(¼çª†üÿÿÿÿ
+t	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(¦Ï¬âÿÿÿÿÿ
+k
+java:S1149*"PReplace the synchronized class "Stack" by an unsynchronized one such as "Deque".(…ø‡Öÿÿÿÿÿ
+k
+java:S1149+"PReplace the synchronized class "Stack" by an unsynchronized one such as "Deque".(½ÅÆòûÿÿÿÿ
+M	java:S106$"9Replace this use of System.out or System.err by a logger.(ü„ê!
+M	java:S106&"9Replace this use of System.out or System.err by a logger.(ü„ê!
+h
+java:S3776)"RRefactor this method to reduce its Cognitive Complexity from 16 to the 15 allowed.(€ñü£

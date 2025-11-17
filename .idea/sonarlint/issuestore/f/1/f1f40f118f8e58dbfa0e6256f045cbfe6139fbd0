@@ -1,0 +1,14 @@
+
+Q
+java:S10662"/Merge this if statement with the enclosing one.(–Å¥Ãûÿÿÿÿ8ĞƒòáÜ1
+Q
+java:S1066S"/Merge this if statement with the enclosing one.(ı‡Øæúÿÿÿÿ8ĞƒòáÜ1
+m	java:S117"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(½ˆ¹í8ĞƒòáÜ1
+r	java:S117"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ìµæÃøÿÿÿÿ8ĞƒòáÜ1
+v	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(»Ú­¿8ÒƒòáÜ1
+H
+java:S1481"&Remove this unused "E" local variable.(ìµæÃøÿÿÿÿ8ÜƒòáÜ1
+U	java:S106&"9Replace this use of System.out or System.err by a logger.(ĞÊÕ8ŞƒòáÜ1
+U	java:S106("9Replace this use of System.out or System.err by a logger.(ÿÄÒ²8ŞƒòáÜ1
+C
+java:S1125<"'Remove the unnecessary boolean literal.(±¬™x8ßƒòáÜ1

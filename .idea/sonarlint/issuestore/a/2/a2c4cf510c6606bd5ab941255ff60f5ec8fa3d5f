@@ -1,0 +1,11 @@
+
+l	java:S127I"XRefactor the code in order to not assign to this loop counter from within the loop body.(¨…ÄK
+l	java:S127P"XRefactor the code in order to not assign to this loop counter from within the loop body.(¨…ÄK
+l	java:S127W"XRefactor the code in order to not assign to this loop counter from within the loop body.(¨…ÄK
+g	java:S101"MRename this class name to match the regular expression '^[A-Z][a-zA-Z0-9]*$'.(š×Öçúÿÿÿÿ
+t	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(¦Ï¬âÿÿÿÿÿ
+M	java:S1064"9Replace this use of System.out or System.err by a logger.(ü„ê!
+M	java:S1066"9Replace this use of System.out or System.err by a logger.(ü„ê!
+h
+java:S3776>"RRefactor this method to reduce its Cognitive Complexity from 23 to the 15 allowed.(õ´—†
+<	java:S131d""Add a default case to this switch.(îÇËúÿÿÿÿ

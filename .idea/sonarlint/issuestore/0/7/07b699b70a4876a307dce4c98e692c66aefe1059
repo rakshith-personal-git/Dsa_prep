@@ -1,0 +1,18 @@
+
+€
+java:S1319E"jThe type of "_neighbors" should be an interface such as "List" rather than the implementation "ArrayList".(™ ƒ
+f	java:S117@"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(àÛÀ¼
+f	java:S117E"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(™ ƒ
+f	java:S117E"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(™ ƒ
+e
+java:S11048"OMake val a static final constant or non-public and provide accessors if needed.(Ô¸úÏ
+k
+java:S11049"UMake neighbors a static final constant or non-public and provide accessors if needed.(«³›æ
+g	java:S101
+"MRename this class name to match the regular expression '^[A-Z][a-zA-Z0-9]*$'.(ëŸùûÿÿÿÿ
+t	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(¦Ï¬âÿÿÿÿÿ
+S	java:S106a"9Replace this use of System.out or System.err by a logger.(ˆáşÿÿÿÿ
+S	java:S106d"9Replace this use of System.out or System.err by a logger.(ªÓ¼áşÿÿÿÿ
+O	java:S106¥"9Replace this use of System.out or System.err by a logger.(Éøœô
+T	java:S106§"9Replace this use of System.out or System.err by a logger.(ˆà¿ªùÿÿÿÿ
+T	java:S106©"9Replace this use of System.out or System.err by a logger.(ªÓ¼áşÿÿÿÿ

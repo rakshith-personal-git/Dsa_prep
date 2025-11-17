@@ -1,0 +1,7 @@
+
+u	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(¢Âç*8â·ĞøÖ1
+T	java:S106#"9Replace this use of System.out or System.err by a logger.(ü„ê!8é·ĞøÖ1
+>
+java:S1116/"Remove this empty statement.(£õ•şÿÿÿÿ8Ó„ãøÖ1
+N
+java:S1128"1Remove this unused import 'java.math.BigInteger'.(»Çâ€8ÒËàøÖ1

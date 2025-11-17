@@ -1,0 +1,16 @@
+
+b	java:S101"MRename this class name to match the regular expression '^[A-Z][a-zA-Z0-9]*$'.(Í‡ƒ©
+t	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(¦Ï¬âÿÿÿÿÿ
+c
+java:S3457/"AFormat specifiers should be used instead of string concatenation.(¿í…Üùÿÿÿÿ8ì¦ÍÓ¡2
+S	java:S106/"9Replace this use of System.out or System.err by a logger.(¿í…Üùÿÿÿÿ
+Z	java:S1060"9Replace this use of System.out or System.err by a logger.(ªÓ¼áşÿÿÿÿ8ì¦ÍÓ¡2
+c
+java:S34572"AFormat specifiers should be used instead of string concatenation.(¿í…Üùÿÿÿÿ8ì¦ÍÓ¡2
+Z	java:S1062"9Replace this use of System.out or System.err by a logger.(¿í…Üùÿÿÿÿ8ì¦ÍÓ¡2
+Z	java:S1063"9Replace this use of System.out or System.err by a logger.(ªÓ¼áşÿÿÿÿ8ì¦ÍÓ¡2
+c
+java:S34575"AFormat specifiers should be used instead of string concatenation.(¿í…Üùÿÿÿÿ8ì¦ÍÓ¡2
+Z	java:S1065"9Replace this use of System.out or System.err by a logger.(¿í…Üùÿÿÿÿ8şÊĞÓ¡2
+o
+java:S3776l"RRefactor this method to reduce its Cognitive Complexity from 17 to the 15 allowed.(ÀúÒì8ï¦ÍÓ¡2

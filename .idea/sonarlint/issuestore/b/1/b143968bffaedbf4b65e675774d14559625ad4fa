@@ -1,0 +1,6 @@
+
+u	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(Ýô’8Š¼€Ñ×1
+Z	java:S106 "9Replace this use of System.out or System.err by a logger.(°¯ÿÁüÿÿÿÿ8Ò¼€Ñ×1
+U	java:S106!"9Replace this use of System.out or System.err by a logger.(×•œ²8Ò¼€Ñ×1
+Z
+java:S1144E"=Remove this unused private "countingSortWholeNumbers" method.(§ˆÉ½8›‹ŠÑ×1

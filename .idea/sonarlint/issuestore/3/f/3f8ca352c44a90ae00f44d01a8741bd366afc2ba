@@ -1,0 +1,9 @@
+
+v	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(»Ú­¿8Ù“—çÜ1
+b
+java:S1659)"@Declare "col" and all following declarations on a separate line.(Ó“±þùÿÿÿÿ8õ“—çÜ1
+Z	java:S106("9Replace this use of System.out or System.err by a logger.(ªÓ¼áþÿÿÿÿ8ö“—çÜ1
+Z	java:S106i"9Replace this use of System.out or System.err by a logger.(¸î“Èÿÿÿÿÿ8ù“—çÜ1
+Z	java:S106l"9Replace this use of System.out or System.err by a logger.(ªÓ¼áþÿÿÿÿ8ú“—çÜ1
+N
+java:S1144="1Remove this unused private "isBorderCell" method.(ÕîŠÕ8Ñ¬¶çÜ1

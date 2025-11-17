@@ -1,0 +1,14 @@
+
+n	java:S101"MRename this class name to match the regular expression '^[A-Z][a-zA-Z0-9]*$'.(×ÈÛÖúÿÿÿÿ8ûïòğç1
+{	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(¦Ï¬âÿÿÿÿÿ8üïòğç1
+c
+java:S3457"AFormat specifiers should be used instead of string concatenation.(¿í…Üùÿÿÿÿ8Âğòğç1
+Z	java:S106"9Replace this use of System.out or System.err by a logger.(¿í…Üùÿÿÿÿ8Âğòğç1
+W
+java:S1994+":Move the update of "count" into this loop's update clause.(•Ìê÷8ûïùğç1
+\
+java:S19942":Move the update of "count" into this loop's update clause.(êúÑéşÿÿÿÿ8à¸úğç1
+W
+java:S19949":Move the update of "count" into this loop's update clause.(Óğ·è8Š‹ûğç1
+\
+java:S1994@":Move the update of "count" into this loop's update clause.(…¬áÄüÿÿÿÿ8·Óûğç1
