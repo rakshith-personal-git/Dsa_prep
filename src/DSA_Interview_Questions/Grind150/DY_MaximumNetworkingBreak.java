@@ -29,6 +29,18 @@ public class DY_MaximumNetworkingBreak {
         System.out.println(findBreakDuration(n, k, t, start, finish));
     }
 
+    /**
+     * The longest break is either at the start, at the end, or between two consecutive presentations.
+     * For a fixed break length L in a fixed place, we pack the presentations in the only valid way and count how many must be moved; that’s the minimum moves needed.
+     * Because this move count is not monotonic in L, we iterate over all L in [0, t] instead of binary searching.
+     * The solution is the maximum L for which that minimum number of moves is ≤ k, over “break at start” and “break at end” (and optionally “break in the middle”)
+     * @param n
+     * @param k
+     * @param t
+     * @param start
+     * @param finish
+     * @return
+     */
     public static int findBreakDuration(int n, int k, int t, int[] start, int[] finish) {
         if (n <= 0 || t <= 0) return 0;
 
