@@ -51,50 +51,70 @@ public class BW_CourseSchedule {
      **/
 
 
-    //link to explain the logic if can't understand -> https://youtu.be/Zbbe9FYVnM4?si=YPFJYjYkiq2yKNhY
-    private static boolean canFinishUsingDFS(int numCourses, int[][] prerequisites) {
+
+    /**
+     Approach A: DFS with state colors (very interview‑friendly)
+     This is a classic cycle detection in directed graphs.
+
+     Core idea
+     Build adjacency list: adj[u] = list of courses that depend on u (edges u -> v).
+
+     Track visit state for each node:
+     0 = unvisited
+     1 = visiting (currently in recursion stack)
+     2 = visited (all its descendants checked, no cycle)
+
+     DFS rule:
+     When you start exploring a node, mark it visiting.
+     For each neighbor:
+     If neighbor is visiting → you found a back edge → cycle.
+     If neighbor is unvisited, DFS on it.
+     After all neighbors are processed with no cycle, mark node visited.
+
+     Pseudocode thinking:
+     Build adj from prerequisites.
+     state[i] = 0 for all i.
+     For each course i:
+     If state[i] == 0, run DFS(i).
+     If DFS ever report cycle, return false.
+     If no cycle for any node, return true.
+     */
+    public static boolean canFinishUsingDFS(int numCourses, int[][] prerequisites) {
         List<List<Integer>> graph = new ArrayList<>();
         for (int i = 0; i < numCourses; i++) {
-            graph.add(new ArrayList<>()); //basically numCourses is number of vertices and prerequisites are directed edges
+            graph.add(new ArrayList<>());
+        }
+        // build edges: b -> a
+        for (int[] p : prerequisites) {
+            int a = p[0], b = p[1];
+            graph.get(b).add(a);
         }
 
-        for (int[] pair : prerequisites) {
-            graph.get(pair[1]).add(pair[0]); //because in constraints its mentioned that prerequisites[i].length == 2
-        }
+        int[] state = new int[numCourses]; // 0=unvisited, 1=visiting, 2=visited
 
-        boolean[] visited = new boolean[numCourses];
-        boolean[] recursion = new boolean[numCourses];
-
-        for (int i = 0; i< numCourses; i++) {
-            if (!visited[i]) {
-                if (!dfs(graph, i, visited, recursion)) {
+        for (int i = 0; i < numCourses; i++) {
+            if (state[i] == 0) {
+                if (hasCycle(i, graph, state)) {
                     return false;
                 }
             }
         }
         return true;
-
-
     }
 
-    private static boolean dfs(List<List<Integer>> graph, int i, boolean[] visited, boolean[] recursion) {
-        visited[i] = true;
-        recursion[i] = true;
-
-        if (graph.get(i) != null) {
-            for (int neighbour : graph.get(i)) {
-                if (recursion[neighbour]) {
-                    return false;
-                }
-                if (!visited[neighbour]) {
-                    if (!dfs(graph, neighbour, visited, recursion)) {
-                        return false;
-                    }
-                }
+    private static boolean hasCycle(int node, List<List<Integer>> graph, int[] state) {
+        state[node] = 1; // visiting
+        for (int neigbhour : graph.get(node)) {
+            if (state[neigbhour] == 1) {
+                // found a back edge -> cycle
+                return true;
+            }
+            if (state[neigbhour] == 0 && hasCycle(neigbhour, graph, state)) {
+                return true;
             }
         }
-        recursion[i] = false;
-        return true;
+        state[node] = 2; // done
+        return false;
     }
 
 

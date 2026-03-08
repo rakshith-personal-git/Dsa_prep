@@ -1,4 +1,4 @@
-package DSA_Interview_Questions.Grind150;
+package DSA_Interview_Questions.Fivetran;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,7 +22,7 @@ import java.util.concurrent.Future;
  */
 
 
-public class EB_EmpPerCity {
+public class EmpPerCity {
 
     /**
      * Demo for counting employees by city using
