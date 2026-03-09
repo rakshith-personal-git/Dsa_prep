@@ -34,7 +34,7 @@ Constraints:
 
 import java.util.*;
 
-class Result {
+class GetMinTimeForCacheServer {
 
     /*
      * n: number of services
@@ -97,17 +97,17 @@ class Result {
         // Sample Test Case 1
         int n1 = 3;
         List<Integer> cache1 = Arrays.asList(1, 1, 3, 1, 3, 1);
-        System.out.println(Result.getMinTime(n1, cache1)); // Expected output: 3
+        System.out.println(GetMinTimeForCacheServer.getMinTime(n1, cache1)); // Expected output: 3
 
         // Sample Test Case 2
         int n2 = 4;
         List<Integer> cache2 = Arrays.asList(1, 2, 3, 4);
-        System.out.println(Result.getMinTime(n2, cache2)); // Expected output: 1
+        System.out.println(GetMinTimeForCacheServer.getMinTime(n2, cache2)); // Expected output: 1
 
         // Additional Test Case
         int n3 = 5;
         List<Integer> cache3 = Arrays.asList(2, 3, 3, 2, 5, 5, 1);
-        System.out.println(Result.getMinTime(n3, cache3)); // Expected output: 2
+        System.out.println(GetMinTimeForCacheServer.getMinTime(n3, cache3)); // Expected output: 2
 
         // Large Test Case
         int n4 = 100000;
@@ -115,7 +115,7 @@ class Result {
         for (int i = 1; i <= 100000; i++) {
             cache4.add(i % n4 + 1);
         }
-        System.out.println(Result.getMinTime(n4, cache4)); // Expected output: 1
+        System.out.println(GetMinTimeForCacheServer.getMinTime(n4, cache4)); // Expected output: 1
     }
 
 }
