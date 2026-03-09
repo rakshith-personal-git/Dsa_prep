@@ -21,25 +21,177 @@ public class MaximumNetworkingBreak {
 
     public static void main(String[] args) {
         int n = 3, k = 2, t = 15;
-        int[] start = {0, 6, 7}, finish = {5, 7, 8}; // 8
+        int[] start = {0, 6, 7}, finish = {5, 7, 8}; // Expected: 8
         int n2 = 4, k2 = 2, t2 = 15;
-        int[] start2 = {4, 6, 7, 10}, finish2 = {5, 7, 8, 11}; //6
-        System.out.println(findBreakDuration(n, k, t, start, finish));
+        int[] start2 = {4, 6, 7, 10}, finish2 = {5, 7, 8, 11}; // Expected: 6
+        
+        System.out.println("Test 1 - New approach: " + findBreakDuration(n, k, t, start, finish));
+        System.out.println("Test 2 - New approach: " + findBreakDuration(n2, k2, t2, start2, finish2));
+        
+        System.out.println("\nTest 1 - Original: " + findBreakDuration_Original(n, k, t, start, finish));
+        System.out.println("Test 2 - Original: " + findBreakDuration_Original(n2, k2, t2, start2, finish2));
     }
 
     /**
-     * The longest break is either at the start, at the end, or between two consecutive presentations.
-     * For a fixed break length L in a fixed place, we pack the presentations in the only valid way and count how many must be moved; that’s the minimum moves needed.
-     * Because this move count is not monotonic in L, we iterate over all L in [0, t] instead of binary searching.
-     * The solution is the maximum L for which that minimum number of moves is ≤ k, over “break at start” and “break at end” (and optionally “break in the middle”)
-     * @param n
-     * @param k
-     * @param t
-     * @param start
-     * @param finish
-     * @return
+     * ============================================================================
+     * EASIER TO UNDERSTAND APPROACH
+     * ============================================================================
+     * 
+     * PROBLEM BREAKDOWN:
+     * - We have presentations that can be rescheduled (moved in time)
+     * - We can reschedule at most k presentations
+     * - Goal: Find the maximum continuous networking break
+     * 
+     * KEY INSIGHT:
+     * The maximum networking break can only occur in 2 places:
+     * 1. At the BEGINNING: from time 0 to when the first presentation starts
+     * 2. At the END: from when the last presentation ends to time t
+     * 
+     * WHY? Because presentations must maintain their order and can't overlap.
+     * If we create a gap in the middle, we're wasting space that could be used
+     * to extend a break at the beginning or end.
+     * 
+     * STRATEGY:
+     * 1. Try every possible break length from 0 to t
+     * 2. For each break length, check TWO scenarios:
+     *    a) Can we create this break at the START?
+     *    b) Can we create this break at the END?
+     * 3. To check feasibility: pack all presentations tightly and count moves needed
+     * 4. If moves needed ≤ k, this break length is achievable
+     * 5. Return the maximum achievable break length
+     * 
+     * TIME COMPLEXITY: O(t * n) where t is event duration and n is number of presentations
      */
     public static int findBreakDuration(int n, int k, int t, int[] start, int[] finish) {
+        if (n <= 0 || t <= 0) return 0;
+
+        // Step 1: Calculate duration of each presentation (this never changes)
+        int[] duration = new int[n];
+        for (int i = 0; i < n; i++) {
+            duration[i] = finish[i] - start[i];
+        }
+
+        int maxBreak = 0;
+
+        // Step 2: Try all possible break lengths from 0 to t
+        for (int breakLength = 0; breakLength <= t; breakLength++) {
+            
+            // SCENARIO 1: Break at the BEGINNING
+            // Pack all presentations tightly starting after the break
+            int movesNeeded = canAchieveBreakAtStart(n, k, t, start, duration, breakLength);
+            if (movesNeeded <= k) {
+                maxBreak = Math.max(maxBreak, breakLength);
+            }
+            
+            // SCENARIO 2: Break at the END
+            // Pack all presentations tightly ending before the break
+            movesNeeded = canAchieveBreakAtEnd(n, k, t, start, duration, breakLength);
+            if (movesNeeded <= k) {
+                maxBreak = Math.max(maxBreak, breakLength);
+            }
+        }
+
+        return maxBreak;
+    }
+    
+    /**
+     * Check if we can create a break of given length at the START
+     * 
+     * APPROACH:
+     * - First presentation should start at 'breakLength' (after the break)
+     * - Pack all presentations tightly one after another (no gaps)
+     * - Count how many presentations need to be moved from their original position
+     * 
+     * EXAMPLE: breakLength = 5, presentations with durations [2, 3, 1]
+     * - Presentation 0: starts at 5, ends at 7
+     * - Presentation 1: starts at 7, ends at 10
+     * - Presentation 2: starts at 10, ends at 11
+     * 
+     * @return number of moves needed, or Integer.MAX_VALUE if not feasible
+     */
+    private static int canAchieveBreakAtStart(int n, int k, int t, int[] start, int[] duration, int breakLength) {
+        int currentTime = breakLength;  // First presentation starts here
+        int movesNeeded = 0;
+        
+        for (int i = 0; i < n; i++) {
+            // Check if this presentation needs to be moved
+            if (start[i] != currentTime) {
+                movesNeeded++;
+            }
+            
+            // Early exit optimization: if we already exceed k moves, no point continuing
+            if (movesNeeded > k) {
+                return movesNeeded;
+            }
+            
+            // Move to next presentation's start time (current ends, next starts immediately)
+            currentTime += duration[i];
+        }
+        
+        // Check if all presentations fit within the event time [0, t]
+        if (currentTime > t) {
+            return Integer.MAX_VALUE; // Not feasible - presentations overflow past time t
+        }
+        
+        return movesNeeded;
+    }
+    
+    /**
+     * Check if we can create a break of given length at the END
+     * 
+     * APPROACH:
+     * - Last presentation should end at 't - breakLength' (before the break)
+     * - Pack all presentations tightly backwards from that point
+     * - Count how many presentations need to be moved from their original position
+     * 
+     * EXAMPLE: t = 15, breakLength = 5, presentations with durations [2, 3, 1]
+     * - Last presentation ends at 15 - 5 = 10
+     * - Presentation 2: starts at 9, ends at 10
+     * - Presentation 1: starts at 6, ends at 9
+     * - Presentation 0: starts at 4, ends at 6
+     * 
+     * @return number of moves needed, or Integer.MAX_VALUE if not feasible
+     */
+    private static int canAchieveBreakAtEnd(int n, int k, int t, int[] start, int[] duration, int breakLength) {
+        int currentEndTime = t - breakLength;  // Last presentation ends here
+        int movesNeeded = 0;
+        
+        // Go through presentations in reverse order (from last to first)
+        for (int i = n - 1; i >= 0; i--) {
+            // Calculate where this presentation should start
+            int requiredStartTime = currentEndTime - duration[i];
+            
+            // Check if it fits (can't start before time 0)
+            if (requiredStartTime < 0) {
+                return Integer.MAX_VALUE; // Not feasible - presentations overflow before time 0
+            }
+            
+            // Check if this presentation needs to be moved
+            if (start[i] != requiredStartTime) {
+                movesNeeded++;
+            }
+            
+            // Early exit optimization: if we already exceed k moves, no point continuing
+            if (movesNeeded > k) {
+                return movesNeeded;
+            }
+            
+            // Move to previous presentation's end time (this one starts where previous ends)
+            currentEndTime = requiredStartTime;
+        }
+        
+        return movesNeeded;
+    }
+
+    /**
+     * ============================================================================
+     * ORIGINAL IMPLEMENTATION (kept for reference)
+     * ============================================================================
+     * 
+     * This is the original solution - it works correctly but is harder to understand
+     * because it uses less descriptive variable names and combines logic inline.
+     */
+    public static int findBreakDuration_Original(int n, int k, int t, int[] start, int[] finish) {
         if (n <= 0 || t <= 0) return 0;
 
         int[] d = new int[n];

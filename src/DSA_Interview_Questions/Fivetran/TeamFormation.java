@@ -29,6 +29,8 @@ public class TeamFormation {
         }
     }
 
+    //TC:- Total: O(k log k) + O(teamSize × log k) = O(teamSize × log k) (assuming teamSize ≥ k, which is typical)
+    //SC:- Total: O(k) + O(k) = O(2k) = O(k)
     public static long teamFormation(int[] score, int teamSize, int k) {
         int n = score.length;
 
