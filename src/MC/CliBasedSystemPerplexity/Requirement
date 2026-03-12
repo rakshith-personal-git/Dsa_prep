@@ -1,0 +1,219 @@
+Design and implement a CLI-based task management system that supports multiple users, tracks task progress, and generates productivity reports.
+The system will read commands from standard input and print results to standard output.
+
+Problem Description
+-------------------
+
+You are given a set of commands to manage tasks assigned between users.
+
+A task:
+
+- Has a creator (the user who created/assigned the task).
+- Has an assignee (the user responsible for doing the task).
+- Has a title (unique per assignee).
+- Belongs to a category (e.g., BugFix, Documentation, Feature).
+- Has an estimated number of hours.
+- Has a status: PENDING or COMPLETED.
+
+Your program must:
+
+1. Add tasks.
+2. Mark tasks as completed.
+3. Show tasks for a user, filtered by status.
+4. Show a productivity report across all users.
+5. Show a category-wise summary of hours.
+
+You can assume:
+
+- User names are case-sensitive strings without spaces.
+- Task titles are case-sensitive strings without spaces.
+- Categories are case-sensitive strings without spaces.
+- Hours are positive integers.
+
+Commands
+--------
+
+Each command is a single line. Fields are space-separated.
+
+### 1. ADD_TASK
+
+Assign a task from one user to another.
+
+Format:
+
+ADD_TASK <creator> <assignee> <title> <category> <hours>
+
+- creator: User assigning the task.
+- assignee: User responsible for completing the task.
+- title: Task title (unique per assignee).
+- category: Category name (e.g., BugFix, Documentation, Feature).
+- hours: Estimated hours (integer > 0).
+- New tasks start in PENDING status.
+
+Behavior:
+
+- If a task with the same title already exists for the same assignee, you may ignore the command or overwrite the existing one (document your choice in code comments).
+- For simplicity, you may assume input will not intentionally create duplicates.
+
+Example:
+
+ADD_TASK Alice Bob FixLoginIssue BugFix 3
+ADD_TASK Bob Charlie WriteDocs Documentation 2
+ADD_TASK Alice Bob AddSignupFeature Feature 5
+ADD_TASK Charlie Bob UpdateReadme Documentation 1
+
+### 2. COMPLETE_TASK
+
+Mark a task as completed for a specific user.
+
+Format:
+
+COMPLETE_TASK <assignee> <title>
+
+Behavior:
+
+- If the task exists and is PENDING, mark it as COMPLETED.
+- If the task does not exist, ignore the command.
+- If the task is already COMPLETED, do nothing.
+
+Example:
+
+COMPLETE_TASK Bob FixLoginIssue
+COMPLETE_TASK Bob AddSignupFeature
+
+### 3. SHOW_TASKS
+
+Show tasks for a specific user, with a filter on status.
+
+Format:
+
+SHOW_TASKS <user> <status>
+
+- user: The user whose tasks you want to see (as assignee).
+- status:
+  - PENDING: Show only pending tasks.
+  - COMPLETED: Show only completed tasks.
+  - ALL: Show both.
+
+Output:
+
+- One line per task that matches the filter.
+- Each line should at least include: title, category, hours, and status.
+- If the user has no matching tasks, print nothing or a clear message (be consistent).
+
+Example (conceptual):
+
+For the commands:
+
+ADD_TASK Alice Bob FixLoginIssue BugFix 3
+ADD_TASK Alice Bob AddSignupFeature Feature 5
+COMPLETE_TASK Bob FixLoginIssue
+SHOW_TASKS Bob ALL
+
+Possible output:
+
+FixLoginIssue BugFix 3 COMPLETED
+AddSignupFeature Feature 5 PENDING
+
+### 4. SHOW_PRODUCTIVITY
+
+Generate a productivity report across all users.
+
+Format:
+
+SHOW_PRODUCTIVITY
+
+For each user who has at least one task (as assignee), compute:
+
+- total_tasks: Total tasks assigned to the user.
+- completed_tasks: Tasks with status COMPLETED.
+- completion_percentage: floor((completed_tasks * 100) / total_tasks).
+
+Output:
+
+- One line per user:
+
+<user> <total_tasks> <completed_tasks> <completion_percentage>%
+
+Example (conceptual):
+
+Given:
+
+ADD_TASK Alice Bob FixLoginIssue BugFix 3
+ADD_TASK Bob Charlie WriteDocs Documentation 2
+ADD_TASK Alice Bob AddSignupFeature Feature 5
+ADD_TASK Charlie Bob UpdateReadme Documentation 1
+COMPLETE_TASK Bob FixLoginIssue
+COMPLETE_TASK Bob AddSignupFeature
+SHOW_PRODUCTIVITY
+
+Possible output:
+
+Bob 3 2 66%
+Charlie 1 0 0%
+
+(Any consistent ordering of users is acceptable.)
+
+### 5. CATEGORY_SUMMARY
+
+Show total hours per category across all users.
+
+Format:
+
+CATEGORY_SUMMARY
+
+For each category, compute:
+
+- total_hours: Sum of hours for tasks in that category.
+
+You may choose whether to count only completed tasks or all tasks (pending + completed). A common choice is to count all tasks; document your choice in comments.
+
+Output:
+
+- One line per category:
+
+<category> <total_hours>
+
+Example (conceptual):
+
+Using the same commands:
+
+CATEGORY_SUMMARY
+
+Possible output:
+
+BugFix 3
+Documentation 3
+Feature 5
+
+Sample End-to-End Input
+-----------------------
+
+ADD_TASK Alice Bob FixLoginIssue BugFix 3
+ADD_TASK Bob Charlie WriteDocs Documentation 2
+ADD_TASK Alice Bob AddSignupFeature Feature 5
+ADD_TASK Charlie Bob UpdateReadme Documentation 1
+COMPLETE_TASK Bob FixLoginIssue
+COMPLETE_TASK Bob AddSignupFeature
+SHOW_TASKS Bob ALL
+SHOW_PRODUCTIVITY
+CATEGORY_SUMMARY
+
+You should define and document your exact output format clearly and keep it consistent, even if it differs in minor formatting details from the examples above.
+
+Expectations and Guidelines
+---------------------------
+
+- Use a modular, object-oriented design where appropriate (for example, classes such as Task and TaskManager).
+- Keep responsibilities separated; avoid putting all logic into a single class or method.
+- Design the system so that it is easy to extend (e.g., to add new commands or new report types).
+- Handle edge cases gracefully (e.g., completing non-existent tasks, listing tasks for a user with no tasks).
+- The program should read commands until EOF (or until some explicit exit command if you add one) and be demo-able via a main driver program or tests.
+- You may use any programming language and standard libraries you prefer.
+
+Other Notes:
+Do not use any database or NoSQL store, use in-memory data-structure for now.
+Do not create any UI for the application.
+Write a driver class for demo purpose. Which will execute all the commands at one place in the code and have test cases.
+Please prioritize code compilation, execution and completion.
+Work on the expected output first and then add good-to-have features of your own.

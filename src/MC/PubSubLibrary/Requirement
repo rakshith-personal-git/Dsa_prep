@@ -1,0 +1,15 @@
+Build a Pub-Sub Library with the following capabilities:
+
+The library should have the notion of a Topic, Publisher, and Consumer.
+The publisher publishes to a topic, and multiple consumers can consume from a topic.
+One topic can have multiple consumers and publishers.
+The library should be able to manage multiple topics:
+Create topics
+Delete topics
+Consumers should be able to consume when a message is received for the topic.
+Ability to publish messages in parallel.
+Graceful handling of exceptions.
+Offset Management for Consumers.
+Topics should have a max retention period beyond which messages should be deleted (topic-level property).
+[Bonus-1] Ability to reset offset and replay messages from a particular offset.
+[Bonus-2] Visibility into consumer/topic status based on last offset read or lag.
