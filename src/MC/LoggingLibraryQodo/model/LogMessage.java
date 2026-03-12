@@ -1,4 +1,4 @@
-package MC.LoggingLibrary.model;
+package MC.LoggingLibraryQodo.model;
 
 /**
  * Immutable value object representing a single log entry.

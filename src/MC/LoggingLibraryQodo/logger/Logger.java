@@ -1,6 +1,6 @@
-package MC.LoggingLibrary.logger;
+package MC.LoggingLibraryQodo.logger;
 
-import MC.LoggingLibrary.model.LogLevel;
+import MC.LoggingLibraryQodo.model.LogLevel;
 
 /**
  * Public API interface for the Logging Library.

@@ -1,9 +1,9 @@
-package MC.LoggingLibrary.logger;
+package MC.LoggingLibraryQodo.logger;
 
-import MC.LoggingLibrary.config.LoggerConfig;
-import MC.LoggingLibrary.model.LogLevel;
-import MC.LoggingLibrary.model.LogMessage;
-import MC.LoggingLibrary.sink.Sink;
+import MC.LoggingLibraryQodo.config.LoggerConfig;
+import MC.LoggingLibraryQodo.model.LogLevel;
+import MC.LoggingLibraryQodo.model.LogMessage;
+import MC.LoggingLibraryQodo.sink.Sink;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

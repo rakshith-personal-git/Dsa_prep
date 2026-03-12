@@ -1,11 +1,11 @@
-package MC.LoggingLibrary;
+package MC.LoggingLibraryQodo;
 
-import MC.LoggingLibrary.config.LoggerConfig;
-import MC.LoggingLibrary.config.LoggerConfig.LoggerType;
-import MC.LoggingLibrary.factory.LoggerFactory;
-import MC.LoggingLibrary.logger.Logger;
-import MC.LoggingLibrary.model.LogLevel;
-import MC.LoggingLibrary.sink.StdOutSink;
+import MC.LoggingLibraryQodo.config.LoggerConfig;
+import MC.LoggingLibraryQodo.config.LoggerConfig.LoggerType;
+import MC.LoggingLibraryQodo.factory.LoggerFactory;
+import MC.LoggingLibraryQodo.logger.Logger;
+import MC.LoggingLibraryQodo.model.LogLevel;
+import MC.LoggingLibraryQodo.sink.StdOutSink;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;

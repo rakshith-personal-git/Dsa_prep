@@ -1,4 +1,4 @@
-package MC.LoggingLibrary.model;
+package MC.LoggingLibraryQodo.model;
 
 /**
  * Enum representing log severity levels in ascending order of priority.

@@ -1,7 +1,7 @@
-package MC.LoggingLibrary.logger;
+package MC.LoggingLibraryQodo.logger;
 
-import MC.LoggingLibrary.config.LoggerConfig;
-import MC.LoggingLibrary.model.LogMessage;
+import MC.LoggingLibraryQodo.config.LoggerConfig;
+import MC.LoggingLibraryQodo.model.LogMessage;
 
 /**
  * Synchronous Logger implementation.

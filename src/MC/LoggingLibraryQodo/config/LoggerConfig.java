@@ -1,7 +1,7 @@
-package MC.LoggingLibrary.config;
+package MC.LoggingLibraryQodo.config;
 
-import MC.LoggingLibrary.model.LogLevel;
-import MC.LoggingLibrary.sink.Sink;
+import MC.LoggingLibraryQodo.model.LogLevel;
+import MC.LoggingLibraryQodo.sink.Sink;
 
 import java.util.ArrayList;
 import java.util.Collections;

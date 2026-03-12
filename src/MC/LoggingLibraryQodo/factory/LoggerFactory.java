@@ -1,9 +1,9 @@
-package MC.LoggingLibrary.factory;
+package MC.LoggingLibraryQodo.factory;
 
-import MC.LoggingLibrary.config.LoggerConfig;
-import MC.LoggingLibrary.logger.AsyncLogger;
-import MC.LoggingLibrary.logger.Logger;
-import MC.LoggingLibrary.logger.SyncLogger;
+import MC.LoggingLibraryQodo.config.LoggerConfig;
+import MC.LoggingLibraryQodo.logger.AsyncLogger;
+import MC.LoggingLibraryQodo.logger.Logger;
+import MC.LoggingLibraryQodo.logger.SyncLogger;
 
 /**
  * Factory for creating Logger instances from configuration.

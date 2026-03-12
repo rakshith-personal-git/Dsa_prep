@@ -1,7 +1,7 @@
-package MC.LoggingLibrary.sink;
+package MC.LoggingLibraryQodo.sink;
 
-import MC.LoggingLibrary.model.LogLevel;
-import MC.LoggingLibrary.model.LogMessage;
+import MC.LoggingLibraryQodo.model.LogLevel;
+import MC.LoggingLibraryQodo.model.LogMessage;
 
 /**
  * Strategy Pattern: Sink Interface

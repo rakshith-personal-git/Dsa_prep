@@ -262,7 +262,7 @@ javac -d out src/MC/LoggingLibrary/model/LogLevel.java \
              src/MC/LoggingLibrary/factory/LoggerFactory.java \
              src/MC/LoggingLibrary/LoggingLibraryDriver.java
 
-java -cp out MC.LoggingLibrary.LoggingLibraryDriver
+java -cp out MC.LoggingLibraryQodo.LoggingLibraryDriver
 ```
 
 ---
