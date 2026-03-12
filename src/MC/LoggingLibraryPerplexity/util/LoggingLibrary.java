@@ -1,4 +1,4 @@
-package MC.LoggingLibraryPerplexity;
+package MC.LoggingLibraryPerplexity.util;
 
 import MC.LoggingLibraryPerplexity.core.LoggerConfig;
 import MC.LoggingLibraryPerplexity.factory.LoggerFactory;

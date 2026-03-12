@@ -1,6 +1,6 @@
 package MC.LoggingLibraryPerplexity.driver;
 
-import MC.LoggingLibraryPerplexity.LoggingLibrary;
+import MC.LoggingLibraryPerplexity.util.LoggingLibrary;
 import MC.LoggingLibraryPerplexity.core.LogLevel;
 import MC.LoggingLibraryPerplexity.core.LoggerConfig;
 import MC.LoggingLibraryPerplexity.core.LoggerType;
