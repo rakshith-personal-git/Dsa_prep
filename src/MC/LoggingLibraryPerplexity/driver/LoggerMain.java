@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
  *   <li>Edge cases: null and blank messages</li>
  * </ol>
  */
-public class Main {
+public class LoggerMain {
 
     public static void main(String[] args) throws InterruptedException, IOException {
         System.out.println("==============================================");
