@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Online Chess – Matchmaking HLD</title>
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&f[]=cabinet-grotesk@700,800&display=swap" rel="stylesheet">
+<style>
+:root,[data-theme="light"]{
+  --color-bg:#f7f6f2;--color-surface:#f9f8f5;--color-surface-2:#fbfbf9;
+  --color-surface-offset:#f3f0ec;--color-divider:#dcd9d5;--color-border:#d4d1ca;
+  --color-text:#28251d;--color-text-muted:#7a7974;--color-text-faint:#bab9b4;
+  --color-primary:#01696f;--color-primary-hover:#0c4e54;--color-primary-highlight:#cedcd8;
+  --color-success:#437a22;--color-success-highlight:#d4dfcc;
+  --color-warning:#964219;--color-warning-highlight:#ddcfc6;
+  --color-error:#a12c7b;--color-blue:#006494;--color-blue-highlight:#c6d8e4;
+  --color-gold:#d19900;--color-gold-highlight:#e9e0c6;
+  --color-orange:#da7101;
+  --color-surface-code:#edeae5;
+  --shadow-sm:0 1px 2px oklch(0.2 0.01 80/0.06);
+  --shadow-md:0 4px 12px oklch(0.2 0.01 80/0.08);
+  --shadow-lg:0 12px 32px oklch(0.2 0.01 80/0.12);
+  --radius-sm:0.375rem;--radius-md:0.5rem;--radius-lg:0.75rem;--radius-xl:1rem;
+  --space-1:0.25rem;--space-2:0.5rem;--space-3:0.75rem;--space-4:1rem;
+  --space-5:1.25rem;--space-6:1.5rem;--space-8:2rem;--space-10:2.5rem;
+  --space-12:3rem;--space-16:4rem;
+  --text-xs:clamp(0.75rem,0.7rem + 0.25vw,0.875rem);
+  --text-sm:clamp(0.875rem,0.8rem + 0.35vw,1rem);
+  --text-base:clamp(1rem,0.95rem + 0.25vw,1.125rem);
+  --text-lg:clamp(1.125rem,1rem + 0.75vw,1.5rem);
+  --text-xl:clamp(1.5rem,1.2rem + 1.25vw,2.25rem);
+  --text-2xl:clamp(2rem,1.2rem + 2.5vw,3.5rem);
+  --font-display:'Cabinet Grotesk',sans-serif;
+  --font-body:'Satoshi',sans-serif;
+  --font-mono:'Fira Code','Cascadia Code','JetBrains Mono',monospace;
+  --transition:180ms cubic-bezier(0.16,1,0.3,1);
+}
+[data-theme="dark"]{
+  --color-bg:#171614;--color-surface:#1c1b19;--color-surface-2:#201f1d;
+  --color-surface-offset:#1d1c1a;--color-surface-offset-2:#22211f;
+  --color-surface-dynamic:#2d2c2a;--color-divider:#262523;--color-border:#393836;
+  --color-text:#cdccca;--color-text-muted:#797876;--color-text-faint:#5a5957;
+  --color-primary:#4f98a3;--color-primary-hover:#227f8b;--color-primary-highlight:#313b3b;
+  --color-success:#6daa45;--color-success-highlight:#3a4435;
+  --color-warning:#bb653b;--color-warning-highlight:#564942;
+  --color-error:#d163a7;--color-blue:#5591c7;--color-blue-highlight:#3a4550;
+  --color-gold:#e8af34;--color-gold-highlight:#4d4332;
+  --color-orange:#fdab43;
+  --color-surface-code:#22211f;
+  --shadow-sm:0 1px 2px oklch(0 0 0/0.2);
+  --shadow-md:0 4px 12px oklch(0 0 0/0.3);
+  --shadow-lg:0 12px 32px oklch(0 0 0/0.4);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased;scroll-behavior:smooth;scroll-padding-top:4rem}
+body{min-height:100dvh;font-family:var(--font-body);font-size:var(--text-base);
+  color:var(--color-text);background:var(--color-bg);line-height:1.7}
+img{display:block;max-width:100%}
+h1,h2,h3,h4{font-family:var(--font-display);line-height:1.15;text-wrap:balance}
+p,li{text-wrap:pretty;max-width:80ch}
+code,pre{font-family:var(--font-mono)}
+a{color:var(--color-primary);text-decoration:none;transition:color var(--transition)}
+a:hover{color:var(--color-primary-hover)}
+::selection{background:oklch(from var(--color-primary) l c h/0.25)}
+:focus-visible{outline:2px solid var(--color-primary);outline-offset:3px;border-radius:var(--radius-sm)}
+
+/* Layout */
+.page-wrap{max-width:1100px;margin-inline:auto;padding-inline:var(--space-6)}
+header{position:sticky;top:0;z-index:100;background:color-mix(in oklch,var(--color-bg) 92%,transparent);
+  backdrop-filter:blur(12px);border-bottom:1px solid var(--color-divider);
+  padding:var(--space-3) 0}
+.header-inner{display:flex;align-items:center;justify-content:space-between;
+  max-width:1100px;margin-inline:auto;padding-inline:var(--space-6)}
+.logo{display:flex;align-items:center;gap:var(--space-3);font-family:var(--font-display);
+  font-weight:800;font-size:var(--text-lg);color:var(--color-text)}
+.logo svg{color:var(--color-primary)}
+.theme-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;
+  border-radius:var(--radius-md);color:var(--color-text-muted);
+  transition:all var(--transition)}
+.theme-btn:hover{background:var(--color-surface-offset);color:var(--color-text)}
+.hero{padding:var(--space-12) 0 var(--space-8);border-bottom:1px solid var(--color-divider)}
+.hero-badge{display:inline-flex;align-items:center;gap:var(--space-2);
+  font-size:var(--text-xs);font-weight:700;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--color-primary);background:var(--color-primary-highlight);
+  padding:var(--space-1) var(--space-3);border-radius:var(--radius-full);
+  margin-bottom:var(--space-4)}
+.hero h1{font-size:var(--text-2xl);font-weight:800;margin-bottom:var(--space-4)}
+.hero-sub{font-size:var(--text-lg);color:var(--color-text-muted);max-width:70ch;
+  margin-bottom:var(--space-6)}
+.tags{display:flex;flex-wrap:wrap;gap:var(--space-2)}
+.tag{font-size:var(--text-xs);font-weight:600;padding:var(--space-1) var(--space-3);
+  border-radius:var(--radius-full);border:1px solid var(--color-border);
+  color:var(--color-text-muted);background:var(--color-surface)}
+.tag.blue{color:var(--color-blue);background:var(--color-blue-highlight);border-color:transparent}
+.tag.green{color:var(--color-success);background:var(--color-success-highlight);border-color:transparent}
+.tag.amber{color:var(--color-gold);background:var(--color-gold-highlight);border-color:transparent}
+.tag.orange{color:var(--color-orange);background:var(--color-warning-highlight);border-color:transparent}
+
+/* Main two-column */
+.main-grid{display:grid;grid-template-columns:240px 1fr;gap:var(--space-8);
+  padding:var(--space-8) 0;align-items:start}
+.toc{position:sticky;top:80px;padding:var(--space-4);background:var(--color-surface);
+  border:1px solid var(--color-border);border-radius:var(--radius-lg)}
+.toc-title{font-size:var(--text-xs);font-weight:700;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--color-text-faint);margin-bottom:var(--space-3)}
+.toc-list{list-style:none}
+.toc-list li{margin-bottom:var(--space-1)}
+.toc-list a{font-size:var(--text-sm);color:var(--color-text-muted);
+  transition:color var(--transition);display:block;padding:var(--space-1) 0}
+.toc-list a:hover,.toc-list a.active{color:var(--color-primary)}
+.toc-list .toc-sub{padding-left:var(--space-4)}
+.toc-list .toc-sub a{font-size:var(--text-xs)}
+
+/* Sections */
+.section{margin-bottom:var(--space-12)}
+.section-label{display:inline-flex;align-items:center;gap:var(--space-2);
+  font-size:var(--text-xs);font-weight:700;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--color-text-faint);margin-bottom:var(--space-3)}
+.section-label .dot{width:6px;height:6px;border-radius:50%;background:var(--color-primary)}
+h2.section-title{font-size:var(--text-xl);font-weight:800;margin-bottom:var(--space-4);
+  padding-bottom:var(--space-3);border-bottom:1px solid var(--color-divider)}
+h3.sub-title{font-size:var(--text-lg);font-weight:700;margin:var(--space-6) 0 var(--space-3);
+  color:var(--color-text)}
+h4.sub-sub{font-size:var(--text-base);font-weight:700;margin:var(--space-4) 0 var(--space-2);
+  color:var(--color-text-muted)}
+
+/* Cards & Callouts */
+.card{background:var(--color-surface);border:1px solid var(--color-border);
+  border-radius:var(--radius-lg);padding:var(--space-5);margin-bottom:var(--space-4)}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));
+  gap:var(--space-4);margin-bottom:var(--space-6)}
+.callout{border-radius:var(--radius-lg);padding:var(--space-4) var(--space-5);
+  margin:var(--space-4) 0;display:flex;gap:var(--space-3)}
+.callout-icon{flex-shrink:0;width:20px;height:20px;margin-top:2px}
+.callout.info{background:var(--color-blue-highlight);color:var(--color-blue)}
+.callout.success{background:var(--color-success-highlight);color:var(--color-success)}
+.callout.warning{background:var(--color-warning-highlight);color:var(--color-warning)}
+.callout.error{background:color-mix(in oklch,var(--color-error) 15%,var(--color-bg));
+  color:var(--color-error)}
+.callout-body{font-size:var(--text-sm);line-height:1.6}
+.callout-body strong{font-weight:700}
+
+/* Code blocks */
+pre{background:var(--color-surface-code);border:1px solid var(--color-border);
+  border-radius:var(--radius-lg);padding:var(--space-5);overflow-x:auto;
+  font-size:var(--text-sm);line-height:1.7;margin:var(--space-4) 0;
+  color:var(--color-text)}
+code:not(pre code){background:var(--color-surface-offset);padding:1px 6px;
+  border-radius:var(--radius-sm);font-size:0.875em;color:var(--color-primary)}
+.code-label{font-size:var(--text-xs);font-weight:700;text-transform:uppercase;
+  letter-spacing:.06em;color:var(--color-text-faint);margin-bottom:var(--space-1)}
+
+/* Tables */
+.table-wrap{overflow-x:auto;margin:var(--space-4) 0}
+table{width:100%;border-collapse:collapse;font-size:var(--text-sm)}
+th{background:var(--color-surface-offset);font-weight:700;text-align:left;
+  padding:var(--space-3) var(--space-4);color:var(--color-text-muted);
+  font-size:var(--text-xs);text-transform:uppercase;letter-spacing:.06em}
+td{padding:var(--space-3) var(--space-4);border-top:1px solid var(--color-divider);
+  vertical-align:top}
+tr:hover td{background:var(--color-surface)}
+
+/* Lists */
+ul.bullets,ol.numbered{padding-left:var(--space-5);margin:var(--space-3) 0}
+ul.bullets li,ol.numbered li{margin-bottom:var(--space-2);font-size:var(--text-sm)}
+ul.bullets li::marker{color:var(--color-primary)}
+
+/* Diagram / ASCII */
+.diagram{background:var(--color-surface-code);border:1px solid var(--color-border);
+  border-radius:var(--radius-lg);padding:var(--space-5);overflow-x:auto;
+  font-family:var(--font-mono);font-size:var(--text-xs);line-height:1.8;
+  color:var(--color-text);margin:var(--space-4) 0;white-space:pre}
+
+/* Pill badges inline */
+.badge{display:inline-block;font-size:var(--text-xs);font-weight:700;
+  padding:1px 8px;border-radius:var(--radius-full);vertical-align:middle}
+.badge.green{background:var(--color-success-highlight);color:var(--color-success)}
+.badge.red{background:color-mix(in oklch,var(--color-error) 18%,var(--color-bg));color:var(--color-error)}
+.badge.blue{background:var(--color-blue-highlight);color:var(--color-blue)}
+.badge.amber{background:var(--color-gold-highlight);color:var(--color-gold)}
+.badge.teal{background:var(--color-primary-highlight);color:var(--color-primary)}
+
+/* Step flow */
+.steps{counter-reset:step;list-style:none;padding:0}
+.steps li{counter-increment:step;display:grid;grid-template-columns:32px 1fr;
+  gap:var(--space-3);margin-bottom:var(--space-4);align-items:start}
+.steps li::before{content:counter(step);width:28px;height:28px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-weight:700;
+  font-size:var(--text-xs);background:var(--color-primary-highlight);
+  color:var(--color-primary);flex-shrink:0;margin-top:2px}
+
+/* Interview tips */
+.tip-box{background:color-mix(in oklch,var(--color-gold) 12%,var(--color-bg));
+  border:1px solid var(--color-gold);border-radius:var(--radius-lg);
+  padding:var(--space-4) var(--space-5);margin:var(--space-4) 0;
+  font-size:var(--text-sm)}
+.tip-box .tip-label{font-weight:700;color:var(--color-gold);margin-bottom:var(--space-2);
+  font-size:var(--text-xs);text-transform:uppercase;letter-spacing:.08em}
+
+/* Cross-questions */
+.cq-item{border-left:3px solid var(--color-primary);padding-left:var(--space-4);
+  margin-bottom:var(--space-5)}
+.cq-q{font-weight:700;color:var(--color-text);margin-bottom:var(--space-2);font-size:var(--text-sm)}
+.cq-a{font-size:var(--text-sm);color:var(--color-text-muted)}
+
+/* Number flow */
+.metric-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+  gap:var(--space-3);margin:var(--space-4) 0}
+.metric-card{background:var(--color-surface);border:1px solid var(--color-border);
+  border-radius:var(--radius-lg);padding:var(--space-4);text-align:center}
+.metric-val{font-family:var(--font-display);font-size:var(--text-xl);font-weight:800;
+  color:var(--color-primary)}
+.metric-label{font-size:var(--text-xs);color:var(--color-text-muted);margin-top:var(--space-1)}
+
+@media(max-width:768px){
+  .main-grid{grid-template-columns:1fr}
+  .toc{display:none}
+  .hero h1{font-size:clamp(1.75rem,6vw,3rem)}
+  .card-grid{grid-template-columns:1fr}
+  .metric-grid{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-label="Chess" xmlns="http://www.w3.org/2000/svg">
+        <rect x="4" y="18" width="20" height="4" rx="2" fill="currentColor" opacity=".25"/>
+        <rect x="6" y="14" width="16" height="4" rx="1.5" fill="currentColor" opacity=".4"/>
+        <path d="M11 14V10h6v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="14" cy="7" r="3" fill="currentColor"/>
+        <rect x="3" y="22" width="22" height="3" rx="1.5" fill="currentColor" opacity=".15"/>
+      </svg>
+      Online Chess — Matchmaking HLD
+    </div>
+    <button class="theme-btn" data-theme-toggle aria-label="Toggle theme">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="page-wrap hero">
+  <div class="hero-badge">HLD Interview — SDE3</div>
+  <h1>Design a Matchmaking System<br>for Online Chess (FCFS)</h1>
+  <p class="hero-sub">High-Level Design covering architecture, data model, request flow, concurrency, failure handling, and scalability optimizations — interview-ready revision sheet.</p>
+  <div class="tags">
+    <span class="tag blue">Distributed Systems</span>
+    <span class="tag green">Concurrency</span>
+    <span class="tag amber">Queue Design</span>
+    <span class="tag orange">Failure Handling</span>
+    <span class="tag">Redis</span>
+    <span class="tag">WebSocket</span>
+    <span class="tag">Kafka</span>
+  </div>
+</div>
+
+<div class="page-wrap">
+<div class="main-grid">
+
+<!-- TOC -->
+<nav class="toc" aria-label="Table of contents">
+  <div class="toc-title">Contents</div>
+  <ul class="toc-list">
+    <li><a href="#clarification">1. Clarification</a></li>
+    <li><a href="#requirements">2. Requirements</a></li>
+    <li><a href="#capacity">3. Capacity Estimation</a></li>
+    <li><a href="#architecture">4. Architecture</a></li>
+    <li><a href="#data-model">5. Data Model</a></li>
+    <li><a href="#request-flow">6. Request Flow</a></li>
+    <li><a href="#concurrency">7. Concurrency & Matching</a></li>
+    <li><a href="#failures">8. Failure Handling</a></li>
+    <li><a href="#scalability">9. Scalability</a></li>
+    <li><a href="#optimizations">10. Optimizations</a></li>
+    <li><a href="#cross-questions">11. Cross-Questions</a></li>
+  </ul>
+</nav>
+
+<!-- Content -->
+<main>
+
+<!-- 1. CLARIFICATION -->
+<section class="section" id="clarification">
+  <div class="section-label"><span class="dot"></span>Step 1</div>
+  <h2 class="section-title">Clarification Questions</h2>
+  <p style="margin-bottom:var(--space-4);font-size:var(--text-sm);color:var(--color-text-muted)">Always open an HLD round by clarifying scope. These are the questions to ask — and the answers to assume.</p>
+  
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Question</th><th>Assumption</th></tr></thead>
+    <tbody>
+      <tr><td>Is FCFS strict (global order) or "FCFS among eligible players"?</td><td><span class="badge teal">Assumed:</span> FCFS within a regional shard; oldest-waiting player matched first when a partner is available</td></tr>
+      <tr><td>Do we match by skill (Elo)?</td><td>No Elo constraint in V1 — pure FCFS. Mention Elo extension as an optimization.</td></tr>
+      <tr><td>How many concurrent users?</td><td>10M active users; 1M concurrent matchmaking requests at peak</td></tr>
+      <tr><td>What happens if a player disconnects while in queue?</td><td>Auto-remove after TTL expires (30s heartbeat)</td></tr>
+      <tr><td>Who creates the game session?</td><td>Matchmaking service creates the game room, notifies both players</td></tr>
+      <tr><td>Max acceptable wait time?</td><td>&lt; 5 seconds for 95th percentile</td></tr>
+      <tr><td>Game server placement?</td><td>Out of scope for matchmaking; assume Game Server Pool exists</td></tr>
+      <tr><td>Is this a web or mobile client?</td><td>Both; use WebSocket for real-time notification</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="tip-box">
+    <div class="tip-label">💡 Interview Tip — Opening Line</div>
+    Say: <em>"I want to clarify one key thing up front: a truly global FCFS queue for 1M concurrent users would be a bottleneck. I'll implement FCFS semantics within ordered, sharded queues — preserving first-come-first-served order within each partition."</em>
+  </div>
+</section>
+
+<!-- 2. REQUIREMENTS -->
+<section class="section" id="requirements">
+  <div class="section-label"><span class="dot"></span>Step 2</div>
+  <h2 class="section-title">Requirements</h2>
+  
+  <div class="card-grid">
+    <div class="card">
+      <h3 class="sub-title" style="margin-top:0;font-size:var(--text-base)">✅ Functional</h3>
+      <ul class="bullets">
+        <li>Player joins matchmaking queue (with timestamp)</li>
+        <li>System pairs players FCFS — earliest-waiting gets matched first</li>
+        <li>Matched players receive game session details</li>
+        <li>Player can cancel queue at any time</li>
+        <li>Disconnected players are cleaned up automatically</li>
+        <li>No player matched more than once</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 class="sub-title" style="margin-top:0;font-size:var(--text-base)">⚙️ Non-Functional</h3>
+      <ul class="bullets">
+        <li><strong>Latency:</strong> Match within &lt;5s for p95</li>
+        <li><strong>Throughput:</strong> 1M concurrent queue entries</li>
+        <li><strong>Availability:</strong> 99.99% uptime for matchmaking</li>
+        <li><strong>Consistency:</strong> No double-matching (exactly-once semantics)</li>
+        <li><strong>Scalability:</strong> Horizontally scalable to millions</li>
+        <li><strong>Fault Tolerance:</strong> Survive pod/node failures gracefully</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 class="sub-title" style="margin-top:0;font-size:var(--text-base)">🚫 Out of Scope (V1)</h3>
+      <ul class="bullets">
+        <li>Elo / skill-based matchmaking</li>
+        <li>Game logic (moves, board state)</li>
+        <li>Tournament brackets</li>
+        <li>Spectator mode</li>
+        <li>Chat system</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 3. CAPACITY -->
+<section class="section" id="capacity">
+  <div class="section-label"><span class="dot"></span>Step 3</div>
+  <h2 class="section-title">Capacity Estimation</h2>
+
+  <div class="metric-grid">
+    <div class="metric-card"><div class="metric-val">10M</div><div class="metric-label">Active Users</div></div>
+    <div class="metric-card"><div class="metric-val">1M</div><div class="metric-label">Peak Queue Size</div></div>
+    <div class="metric-card"><div class="metric-val">500K</div><div class="metric-label">Matches/min (peak)</div></div>
+    <div class="metric-card"><div class="metric-val">~8K</div><div class="metric-label">Matches/sec</div></div>
+    <div class="metric-card"><div class="metric-val">~100B</div><div class="metric-label">Per Queue Entry (bytes)</div></div>
+    <div class="metric-card"><div class="metric-val">~100MB</div><div class="metric-label">Queue RAM (1M entries)</div></div>
+  </div>
+
+  <div class="callout info">
+    <svg class="callout-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
+    <div class="callout-body"><strong>Key insight:</strong> 1M queue entries × 100 bytes = ~100MB. A single Redis node fits this easily. Sharding is for throughput (write rate), not memory size.</div>
+  </div>
+
+  <h3 class="sub-title">Write Rate Estimate</h3>
+  <div class="diagram">Queue join rate:   ~1M players joining per 60s = ~16,700 writes/sec
+Queue dequeue:     Same rate ~16,700 dequeues/sec (paired matches)
+Heartbeat writes:  1M players × 1 heartbeat/10s = 100,000 writes/sec (dominant)
+WebSocket msgs:    ~16,700 match notifications/sec</div>
+  <p style="font-size:var(--text-sm);color:var(--color-text-muted);margin-top:var(--space-3)">Heartbeat is the highest-frequency operation. Design the heartbeat to be lightweight (EXPIRE refresh only) and never touch the sorted set.</p>
+</section>
+
+<!-- 4. ARCHITECTURE -->
+<section class="section" id="architecture">
+  <div class="section-label"><span class="dot"></span>Step 4</div>
+  <h2 class="section-title">High-Level Architecture</h2>
+
+  <div class="diagram">
+                        ┌─────────────────────────────────────────────────┐
+                        │               CLIENT LAYER                       │
+                        │   Browser / Mobile App (WebSocket + REST)        │
+                        └───────────────┬─────────────────────────────────┘
+                                        │ HTTPS / WSS
+                        ┌───────────────▼─────────────────────────────────┐
+                        │           API GATEWAY / Load Balancer            │
+                        │   (Nginx / AWS ALB — sticky sessions for WS)     │
+                        └──┬────────────────────────────────┬─────────────┘
+                           │                                │
+               ┌───────────▼───────────┐       ┌───────────▼───────────┐
+               │  Matchmaking API       │       │  WebSocket Gateway     │
+               │  (REST Service)        │       │  (Push notifications)  │
+               │  - POST /queue/join    │       │  - Hold WS connections │
+               │  - DELETE /queue/leave │       │  - Push match events   │
+               └───────────┬───────────┘       └───────────┬───────────┘
+                           │                               │
+               ┌───────────▼───────────────────────────────▼───────────┐
+               │               MATCHMAKING ENGINE                        │
+               │   (Stateless workers — horizontally scalable)           │
+               │   - Dequeue 2 oldest players from Redis ZSET            │
+               │   - Create game session via atomic Lua script           │
+               │   - Publish match event to Kafka                        │
+               └───────────┬───────────────────────────────┬───────────┘
+                           │                               │
+               ┌───────────▼──────┐          ┌────────────▼────────────┐
+               │   Redis Cluster   │          │       Kafka             │
+               │  (Sorted Sets —   │          │  (match-events topic)   │
+               │   queue + state)  │          │  - Fan-out to WS GW     │
+               └──────────────────┘          │  - Audit log            │
+                                             └──────────────────────────┘
+               ┌───────────────────────────────────────────────────────┐
+               │                  POSTGRESQL                            │
+               │  (Persistent storage: users, match history, sessions)  │
+               └───────────────────────────────────────────────────────┘
+               ┌───────────────────────────────────────────────────────┐
+               │          GAME SESSION SERVICE                          │
+               │  (Assigns game room, notifies Game Server Pool)        │
+               └───────────────────────────────────────────────────────┘</div>
+
+  <h3 class="sub-title">Component Responsibilities</h3>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Component</th><th>Technology</th><th>Role</th></tr></thead>
+    <tbody>
+      <tr><td><strong>API Gateway</strong></td><td>Nginx / AWS ALB</td><td>TLS termination, routing, WS sticky sessions</td></tr>
+      <tr><td><strong>Matchmaking API</strong></td><td>Spring Boot (Java)</td><td>Validates join/leave requests, writes to Redis queue</td></tr>
+      <tr><td><strong>WebSocket Gateway</strong></td><td>Spring Boot + STOMP / Socket.io</td><td>Holds persistent connections, pushes match events to players</td></tr>
+      <tr><td><strong>Matchmaking Engine</strong></td><td>Stateless Java workers</td><td>Continuously polls Redis ZSET, atomically pairs players</td></tr>
+      <tr><td><strong>Redis Cluster</strong></td><td>Redis 7 (Sorted Sets + Hashes)</td><td>FCFS queue (ZSET by timestamp), player state (Hash), TTL for heartbeats</td></tr>
+      <tr><td><strong>Kafka</strong></td><td>Apache Kafka</td><td>match-events topic; WebSocket Gateway consumes and pushes; audit log</td></tr>
+      <tr><td><strong>PostgreSQL</strong></td><td>PostgreSQL 15</td><td>Durable storage for user profiles, match history, game session records</td></tr>
+      <tr><td><strong>Game Session Service</strong></td><td>Separate microservice</td><td>Creates game room, assigns game servers, returns game URL</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- 5. DATA MODEL -->
+<section class="section" id="data-model">
+  <div class="section-label"><span class="dot"></span>Step 5</div>
+  <h2 class="section-title">Data Model</h2>
+
+  <h3 class="sub-title">Redis Schema (Hot Path)</h3>
+
+  <div class="code-label">Redis Key Design</div>
+  <div class="diagram">
+# SORTED SET — the FCFS queue
+# Key: matchmaking:queue:{region}
+# Score = epoch timestamp (join time in ms) → ensures FCFS ordering
+# Member = playerId
+ZADD matchmaking:queue:us-east 1712345678901 "player:abc123"
+ZADD matchmaking:queue:us-east 1712345679000 "player:xyz789"
+ZRANGE matchmaking:queue:us-east 0 1 WITHSCORES   → returns 2 oldest players
+
+# HASH — per-player state machine
+# Key: player:state:{playerId}
+# Fields: status, joinedAt, sessionId
+HSET player:state:abc123 status QUEUED joinedAt 1712345678901 region us-east
+
+# STATUS values: QUEUED → RESERVED → MATCHED → PLAYING
+# RESERVED = atomically claimed by engine but session not yet created
+
+# TTL key — heartbeat tracking
+# Key: player:heartbeat:{playerId}  →  value = 1, TTL = 30s
+# Refreshed every 10s by client. On expiry → player is dead → remove from ZSET
+SETEX player:heartbeat:abc123 30 1</div>
+
+  <h3 class="sub-title">PostgreSQL Schema (Durable)</h3>
+  <div class="diagram">
+-- Users table
+CREATE TABLE users (
+    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    username    VARCHAR(50) UNIQUE NOT NULL,
+    elo_rating  INT DEFAULT 1200,
+    created_at  TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Match table (written after a game session is created)
+CREATE TABLE matches (
+    id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    player1_id     UUID REFERENCES users(id) NOT NULL,
+    player2_id     UUID REFERENCES users(id) NOT NULL,
+    created_at     TIMESTAMPTZ DEFAULT NOW(),
+    game_room_url  TEXT,
+    status         VARCHAR(20) DEFAULT 'ACTIVE'  -- ACTIVE | COMPLETED | ABANDONED
+);
+CREATE INDEX idx_matches_player1 ON matches(player1_id);
+CREATE INDEX idx_matches_player2 ON matches(player2_id);
+
+-- Queue audit log (optional — for debugging/replay)
+CREATE TABLE queue_events (
+    id         BIGSERIAL PRIMARY KEY,
+    player_id  UUID,
+    event_type VARCHAR(20),  -- JOINED | MATCHED | CANCELLED | TIMEOUT
+    occurred_at TIMESTAMPTZ DEFAULT NOW()
+);</div>
+
+  <h3 class="sub-title">Player State Machine</h3>
+  <div class="diagram">
+  ┌────────────────────────────────────────────────────────┐
+  │                  PLAYER STATE MACHINE                   │
+  └────────────────────────────────────────────────────────┘
+
+          JOIN /queue
+              │
+              ▼
+         ┌─────────┐   heartbeat expires        ┌──────────┐
+         │ QUEUED  │ ─────────────────────────► │  TIMED   │
+         └────┬────┘                            │   OUT    │
+              │                                 └──────────┘
+              │ Engine atomically claims 2 players
+              ▼
+        ┌──────────┐   session creation fails   ┌──────────┐
+        │ RESERVED │ ─────────────────────────► │  QUEUED  │ (re-enqueue)
+        └────┬─────┘                            └──────────┘
+             │
+             │ Game session created successfully
+             ▼
+        ┌─────────┐   player cancels / leaves   ┌──────────┐
+        │ MATCHED │ ─────────────────────────► │ CANCELLED│
+        └────┬────┘                            └──────────┘
+             │
+             │ Both players connect to game room
+             ▼
+        ┌─────────┐
+        │ PLAYING │
+        └─────────┘</div>
+</section>
+
+<!-- 6. REQUEST FLOW -->
+<section class="section" id="request-flow">
+  <div class="section-label"><span class="dot"></span>Step 6</div>
+  <h2 class="section-title">Request Flow</h2>
+
+  <h3 class="sub-title">Flow 1 — Player Joins Queue</h3>
+  <div class="diagram">
+  Player                API Gateway        Matchmaking API       Redis
+    │                       │                    │                  │
+    │── POST /queue/join ──►│                    │                  │
+    │                       │── route ──────────►│                  │
+    │                       │                    │─ ZADD queue:region score=now() member=playerId ──►│
+    │                       │                    │─ HSET player:state:{id} status=QUEUED ──────────►│
+    │                       │                    │─ SETEX player:heartbeat:{id} 30 1 ──────────────►│
+    │                       │                    │◄──────────────────────────────── OK ─────────────│
+    │◄── 200 { queued:true }─────────────────────│                  │
+    │                       │                    │                  │
+    │  [Every 10s send heartbeat]                 │                  │
+    │── PUT /queue/heartbeat ──────────────────► │                  │
+    │                       │                    │─ SETEX player:heartbeat:{id} 30 1 ──────────────►│</div>
+
+  <h3 class="sub-title">Flow 2 — Matchmaking Engine Loop (core algorithm)</h3>
+  <div class="diagram">
+  MatchmakingEngine          Redis               Kafka           WebSocket GW
+         │                     │                   │                  │
+         │ [Loop — every 50ms] │                   │                  │
+         │                     │                   │                  │
+         │── ZRANGE queue:region 0 1 WITHSCORES ──►│                  │
+         │◄── [p1, t1] [p2, t2] ──────────────────│                  │
+         │                     │                   │                  │
+         │  ┌── Lua Script (ATOMIC) ──────────────►│                  │
+         │  │  1. Verify p1, p2 heartbeats exist    │                  │
+         │  │  2. ZREM p1, p2 from queue            │                  │
+         │  │  3. HSET p1 status=RESERVED           │                  │
+         │  │  4. HSET p2 status=RESERVED           │                  │
+         │  └── EXEC ─────────────────────────────►│                  │
+         │◄── OK / FAIL ───────────────────────────│                  │
+         │                     │                   │                  │
+         │  [If OK] Create game session (sync call to Game Session Svc)│
+         │── HSET p1,p2 status=MATCHED sessionId=X ──────────────────►│
+         │                     │                   │                  │
+         │── PUBLISH match-events {p1,p2,gameUrl} ────────────────────►│
+         │                     │                   │── push to p1 conn►│
+         │                     │                   │── push to p2 conn►│</div>
+
+  <h3 class="sub-title">Flow 3 — Player Cancels Queue</h3>
+  <div class="diagram">
+  Player                   Matchmaking API                Redis
+    │                            │                          │
+    │── DELETE /queue/leave ────►│                          │
+    │                            │─ HGET player:state status ──────────────►│
+    │                            │◄── QUEUED ───────────────────────────────│
+    │                            │─ ZREM matchmaking:queue:{region} playerId►│
+    │                            │─ HSET player:state status=CANCELLED ─────►│
+    │                            │─ DEL player:heartbeat:{id} ───────────────►│
+    │◄── 200 OK ─────────────────│                          │</div>
+
+  <h3 class="sub-title">Flow 4 — WebSocket Match Notification</h3>
+  <div class="diagram">
+  Kafka (match-events)    WebSocket Gateway            Player Browser
+          │                       │                          │
+          │── consume event ─────►│                          │
+          │   { p1, p2, gameUrl } │                          │
+          │                       │── lookup WS conn for p1 ►│
+          │                       │── send: { type:"MATCHED", │
+          │                       │           gameUrl, opponent}│
+          │                       │◄─────────────────────────│ (ACK)
+          │                       │── lookup WS conn for p2 ─►│
+          │                       │── send: { type:"MATCHED" }─►│</div>
+</section>
+
+<!-- 7. CONCURRENCY -->
+<section class="section" id="concurrency">
+  <div class="section-label"><span class="dot"></span>Step 7</div>
+  <h2 class="section-title">Concurrency & Double-Match Prevention</h2>
+
+  <div class="callout warning">
+    <svg class="callout-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+    <div class="callout-body"><strong>Core concurrency problem:</strong> Multiple matchmaking engine pods running simultaneously could each read the same 2 players from the ZSET and create duplicate matches. This is the critical race condition to solve.</div>
+  </div>
+
+  <h3 class="sub-title">Solution: Single-Owner Sharded Architecture</h3>
+  <p style="font-size:var(--text-sm);margin-bottom:var(--space-4)">Each regional queue is owned by exactly ONE matchmaking engine worker at a time. Workers acquire a distributed lock (Redis SETNX) over the shard they process. This eliminates races at the design level.</p>
+
+  <div class="diagram">
+  Queue Shards:
+  ┌──────────────────────────────────────────────────────────┐
+  │ matchmaking:queue:us-east:0  → Worker Pod A (lock held)  │
+  │ matchmaking:queue:us-east:1  → Worker Pod B (lock held)  │
+  │ matchmaking:queue:us-east:2  → Worker Pod C (lock held)  │
+  │ matchmaking:queue:us-east:3  → Worker Pod D (lock held)  │
+  └──────────────────────────────────────────────────────────┘
+  Players are assigned to a shard via: hash(playerId) % NUM_SHARDS
+  Each pod only processes ONE shard → no two pods compete for the same players</div>
+
+  <h3 class="sub-title">Atomic Lua Script (Safety Net)</h3>
+  <p style="font-size:var(--text-sm);margin-bottom:var(--space-3)">Even with sharding, we use a Lua script executed atomically in Redis as a final safety net. Redis is single-threaded for command execution, so a Lua script is always atomic:</p>
+  <div class="code-label">Lua script — atomic pair-and-claim</div>
+  <pre>-- KEYS[1] = queue key (ZSET)
+-- KEYS[2] = player1 heartbeat key
+-- KEYS[3] = player2 heartbeat key
+-- ARGV[1] = player1Id, ARGV[2] = player2Id
+
+local alive1 = redis.call('EXISTS', KEYS[2])
+local alive2 = redis.call('EXISTS', KEYS[3])
+
+if alive1 == 0 or alive2 == 0 then
+  return redis.error_reply("PLAYER_DEAD")
+end
+
+-- Check both are still in QUEUED state
+local s1 = redis.call('HGET', 'player:state:'..ARGV[1], 'status')
+local s2 = redis.call('HGET', 'player:state:'..ARGV[2], 'status')
+
+if s1 ~= 'QUEUED' or s2 ~= 'QUEUED' then
+  return redis.error_reply("ALREADY_MATCHED")
+end
+
+-- Atomically remove from queue + transition state
+redis.call('ZREM', KEYS[1], ARGV[1])
+redis.call('ZREM', KEYS[1], ARGV[2])
+redis.call('HSET', 'player:state:'..ARGV[1], 'status', 'RESERVED')
+redis.call('HSET', 'player:state:'..ARGV[2], 'status', 'RESERVED')
+
+return "OK"</pre>
+
+  <h3 class="sub-title">Why Not Optimistic Locking / CAS?</h3>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Approach</th><th>Pros</th><th>Cons</th><th>Decision</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Redis Lua (our choice)</strong></td><td>Atomic, no retry loops, simple</td><td>Script length limit, Lua debugging hard</td><td><span class="badge green">Chosen</span></td></tr>
+      <tr><td>Redis WATCH/MULTI/EXEC</td><td>Optimistic, no blocking</td><td>Retry on conflict, complex under high concurrency</td><td><span class="badge amber">Fallback</span></td></tr>
+      <tr><td>Single-owner sharding</td><td>Eliminates races architecturally</td><td>Requires coordination layer for shard assignment</td><td><span class="badge green">Primary defense</span></td></tr>
+      <tr><td>DB-level SELECT FOR UPDATE</td><td>Strong guarantees</td><td>Too slow for 8K matches/sec</td><td><span class="badge red">Rejected</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- 8. FAILURES -->
+<section class="section" id="failures">
+  <div class="section-label"><span class="dot"></span>Step 8</div>
+  <h2 class="section-title">Failure Handling</h2>
+
+  <h3 class="sub-title">Failure Scenarios & Mitigations</h3>
+
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Failure</th><th>Detection</th><th>Recovery</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Player disconnects before matching</strong></td>
+        <td>Heartbeat TTL (30s) expires — Redis key auto-deleted</td>
+        <td>Background janitor job scans for QUEUED players whose heartbeat key is missing → ZREM from queue, mark TIMED_OUT</td>
+      </tr>
+      <tr>
+        <td><strong>Player disconnects while in RESERVED state</strong></td>
+        <td>Heartbeat TTL expires during session creation</td>
+        <td>Engine detects PLAYER_DEAD from Lua script → rolls back: ZREM of live player re-enqueued at front (preserving wait time), RESERVED player marked TIMED_OUT</td>
+      </tr>
+      <tr>
+        <td><strong>Matchmaking Engine pod crashes mid-match</strong></td>
+        <td>RESERVED state with no match event after 5s</td>
+        <td>A recovery daemon polls for RESERVED players older than 5s → re-enqueues them with original join timestamp (maintaining FCFS order)</td>
+      </tr>
+      <tr>
+        <td><strong>Game Session Service is down</strong></td>
+        <td>HTTP timeout from engine after session creation call</td>
+        <td>Both players set back to QUEUED, re-inserted at head of queue with original timestamp. Retry with exponential backoff + circuit breaker.</td>
+      </tr>
+      <tr>
+        <td><strong>Redis node failure</strong></td>
+        <td>Redis Sentinel / Cluster failover</td>
+        <td>Redis Cluster (3 primary + 3 replica shards) — automatic failover in &lt;30s. In-flight RESERVED entries may be lost → recovery daemon re-queues on restart.</td>
+      </tr>
+      <tr>
+        <td><strong>Kafka consumer (WS Gateway) lag</strong></td>
+        <td>Consumer group lag monitoring</td>
+        <td>Players are already MATCHED in Redis (source of truth). Client polls GET /queue/status as fallback if WS push is delayed &gt;3s.</td>
+      </tr>
+      <tr>
+        <td><strong>WebSocket connection drops after match</strong></td>
+        <td>Client reconnects → sends playerId</td>
+        <td>Client re-subscribes to WS Gateway → Gateway checks Redis for MATCHED status → resends game URL</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="callout success">
+    <svg class="callout-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+    <div class="callout-body"><strong>Golden rule:</strong> Redis is the source of truth for real-time state. PostgreSQL is the audit trail. Kafka is the fan-out bus. Any component can crash and recover by consulting Redis state.</div>
+  </div>
+
+  <h3 class="sub-title">Janitor / Recovery Service</h3>
+  <div class="diagram">
+  Recovery Daemon (runs every 5s):
+
+  1. SCAN player:state:* WHERE status = RESERVED AND updatedAt < (now - 5s)
+     → Re-enqueue with original joinedAt timestamp (FCFS preserved)
+     → ZADDOPTION NX — only add if not already present
+
+  2. SCAN player:state:* WHERE status = QUEUED
+     → EXISTS player:heartbeat:{id} → if 0: ZREM from queue, mark TIMED_OUT
+
+  3. Emit metrics: queue_depth, reserved_stuck_count, timeout_count</div>
+</section>
+
+<!-- 9. SCALABILITY -->
+<section class="section" id="scalability">
+  <div class="section-label"><span class="dot"></span>Step 9</div>
+  <h2 class="section-title">Scalability Design</h2>
+
+  <h3 class="sub-title">Queue Sharding Strategy</h3>
+  <div class="diagram">
+  Shard Assignment: shard = hash(playerId) % NUM_SHARDS
+
+  ┌─────────────────────────────────────────────────────────┐
+  │  REGION: us-east   (4 shards, 4 workers)                │
+  │                                                         │
+  │  Shard 0 [matchmaking:queue:us-east:0]  ◄── Worker A    │
+  │  Shard 1 [matchmaking:queue:us-east:1]  ◄── Worker B    │
+  │  Shard 2 [matchmaking:queue:us-east:2]  ◄── Worker C    │
+  │  Shard 3 [matchmaking:queue:us-east:3]  ◄── Worker D    │
+  └─────────────────────────────────────────────────────────┘
+
+  Scale horizontally: add shards + workers as load grows.
+  Minimum 2 players per shard needed to match → cross-shard merge for odd cases.</div>
+
+  <div class="callout warning">
+    <svg class="callout-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+    <div class="callout-body"><strong>Odd-queue problem:</strong> If a shard has only 1 player, they can't be matched within that shard. Solution: if queue depth = 1 for &gt;2s, the worker can peek at adjacent shard's oldest player and perform a cross-shard match using a distributed lock over both shards.</div>
+  </div>
+
+  <h3 class="sub-title">Regional Deployment</h3>
+  <div class="diagram">
+  Global Deployment (multi-region):
+  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐
+  │   us-east        │  │   eu-west        │  │   ap-southeast   │
+  │   Redis Cluster  │  │   Redis Cluster  │  │   Redis Cluster  │
+  │   4 shards       │  │   4 shards       │  │   4 shards       │
+  │   4 WS pods      │  │   4 WS pods      │  │   4 WS pods      │
+  └────────┬────────┘  └────────┬────────┘  └────────┬────────┘
+           │                    │                    │
+           └────────────────────┴──────────────────── Global Kafka
+                                                      (cross-region events)</div>
+
+  <h3 class="sub-title">WebSocket Gateway Scaling</h3>
+  <p style="font-size:var(--text-sm);margin-bottom:var(--space-3)">WS connections are stateful — a player's connection is pinned to one pod. When a match event is published to Kafka, ALL WS Gateway pods consume it. Each pod checks its in-memory connection map for the player's connection. Only the pod holding the connection pushes the message.</p>
+  <div class="diagram">
+  WS Pod A: holds connections for players [1,2,5,7...]
+  WS Pod B: holds connections for players [3,4,6,8...]
+
+  Kafka event: { p1: "player1", p2: "player3" }
+  → WS Pod A receives event → finds player1 → pushes MATCHED
+  → WS Pod B receives event → finds player3 → pushes MATCHED
+  → Both pods find nothing for the other player → no-op</div>
+</section>
+
+<!-- 10. OPTIMIZATIONS -->
+<section class="section" id="optimizations">
+  <div class="section-label"><span class="dot"></span>Step 10</div>
+  <h2 class="section-title">Optimizations</h2>
+
+  <div class="card-grid">
+    <div class="card">
+      <h4 style="font-weight:700;margin-bottom:var(--space-3);color:var(--color-primary)">⚡ Latency</h4>
+      <ul class="bullets">
+        <li><strong>Engine polling interval:</strong> 50ms (adjustable). At 8K matches/sec, 50ms gives 400 matches/cycle — well within budget</li>
+        <li><strong>Batch ZRANGE:</strong> Fetch top 20 pairs per cycle, not just 2 — amortizes Redis round trip</li>
+        <li><strong>Long polling fallback:</strong> Clients that can't hold WS use long-poll GET /queue/status with 5s timeout</li>
+        <li><strong>Pre-warm connection pools:</strong> Redis and DB connection pools initialized at startup, not lazily</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4 style="font-weight:700;margin-bottom:var(--space-3);color:var(--color-success)">📈 Throughput</h4>
+      <ul class="bullets">
+        <li><strong>Redis pipeline:</strong> Batch heartbeat refreshes using PIPELINE to reduce RTT</li>
+        <li><strong>Kafka partitioning:</strong> Partition match-events by region — WS pods for a region only read their partition</li>
+        <li><strong>Async DB write:</strong> PostgreSQL match record written asynchronously after Kafka publish — not in critical path</li>
+        <li><strong>Stateless API pods:</strong> All state in Redis → horizontal scale with zero coordination</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4 style="font-weight:700;margin-bottom:var(--space-3);color:var(--color-warning)">🛡️ Reliability</h4>
+      <ul class="bullets">
+        <li><strong>Circuit breaker:</strong> Game Session Service wrapped with Resilience4j — degrade to "session pending" if unavailable</li>
+        <li><strong>Idempotent match creation:</strong> Game Session Service uses matchId as idempotency key — retries safe</li>
+        <li><strong>Dead-letter queue:</strong> Failed Kafka events → DLQ for manual inspection + replay</li>
+        <li><strong>Observability:</strong> queue_depth, match_latency_p99, timeout_rate metrics → PagerDuty alert if queue depth spikes</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4 style="font-weight:700;margin-bottom:var(--space-3);color:var(--color-blue)">🔮 V2 Extensions</h4>
+      <ul class="bullets">
+        <li><strong>Elo-based matching:</strong> Replace pure FCFS with priority score = wait_time_bonus + elo_diff_penalty</li>
+        <li><strong>Smart cross-shard merging:</strong> If player waits &gt;10s, expand to adjacent shards</li>
+        <li><strong>Predictive pre-warm:</strong> ML model predicts queue surge → pre-scales workers 60s ahead</li>
+        <li><strong>Geo-routing:</strong> Route player to closest region's queue to minimize game latency</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 class="sub-title">Bottleneck Analysis</h3>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Component</th><th>Bottleneck Risk</th><th>Mitigation</th></tr></thead>
+    <tbody>
+      <tr><td>Redis ZSET write</td><td>High if single instance</td><td>Redis Cluster + sharding; ZADD is O(log N) — fast</td></tr>
+      <tr><td>Heartbeat writes</td><td>100K writes/sec</td><td>Batch SETEX via pipeline; consider in-memory TTL cache in API pod</td></tr>
+      <tr><td>WebSocket memory</td><td>1M open connections × ~10KB = 10GB per pod</td><td>10 WS pods × 100K connections each = manageable; use epoll (NIO)</td></tr>
+      <tr><td>Kafka consumer lag</td><td>Burst of 500K events</td><td>Increase partitions + consumer group size; enable auto-scaling on lag metric</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- 11. CROSS-QUESTIONS -->
+<section class="section" id="cross-questions">
+  <div class="section-label"><span class="dot"></span>Step 11</div>
+  <h2 class="section-title">Expected Cross-Questions & Answers</h2>
+
+  <div class="cq-item">
+    <div class="cq-q">Q: Why Redis ZSET instead of a Kafka queue for FCFS?</div>
+    <div class="cq-a">Kafka is append-only and great for fan-out, but it doesn't support random deletion (cancellation). When a player cancels, I need to remove their entry from the middle of the queue. Redis ZSET supports O(log N) ZREM, making cancellations cheap. Kafka would require a tombstone pattern with compaction, which adds complexity. Redis ZSET is the right data structure for a mutable, ordered, real-time queue.</div>
+  </div>
+
+  <div class="cq-item">
+    <div class="cq-q">Q: What if Redis goes down?</div>
+    <div class="cq-a">Redis Cluster provides automatic failover (30s max). During that window, new joins are rejected with 503 (graceful degradation). In-flight RESERVED entries are lost — recovered by the recovery daemon which re-enqueues from PostgreSQL's queue_events audit log. The queue was in memory; we accept that brief disruptions may re-order a small number of players — FCFS is restored on recovery.</div>
+  </div>
+
+  <div class="cq-item">
+    <div class="cq-q">Q: How do you prevent two engine workers from matching the same player (race condition)?</div>
+    <div class="cq-a">Two-layer defense: (1) Single-owner architecture — each shard is processed by exactly one worker at a time using a distributed lock (Redis SETNX with TTL). (2) Atomic Lua script — even if shard ownership somehow overlaps, the Lua script checks and transitions status atomically. If two workers both run the script for the same player, the second one sees status ≠ QUEUED and returns ALREADY_MATCHED — no double-match.</div>
+  </div>
+
+  <div class="cq-item">
+    <div class="cq-q">Q: How does the system handle 1 million concurrent WebSocket connections?</div>
+    <div class="cq-a">WS Gateway pods use Java NIO (Netty) which handles 100K+ connections per pod on a single machine using event-driven I/O. For 1M connections, we need ~10 pods. Connections are sticky via the load balancer (IP hash). Each pod maintains an in-memory HashMap of playerId → WS channel. Kafka events broadcast to all pods; only the pod holding the connection pushes the message. Horizontal scaling is straightforward — add more pods.</div>
+  </div>
+
+  <div class="cq-item">
+    <div class="cq-q">Q: Is your FCFS truly global? What about cross-shard fairness?</div>
+    <div class="cq-a">No — it's FCFS within a shard, not globally strict. A player in shard 0 and a player in shard 1 with the same join time might be matched in different order. This is an intentional design choice: global FCFS would require a single-threaded global queue which cannot scale. In practice, since players are hashed to shards deterministically, and shards are processed at the same polling rate, cross-shard fairness deviation is on the order of one poll interval (50ms) — imperceptible to users. I'd call this "practical FCFS" in the interview.</div>
+  </div>
+
+  <div class="cq-item">
+    <div class="cq-q">Q: Why Kafka between Matchmaking Engine and WebSocket Gateway? Why not direct Redis pub/sub?</div>
+    <div class="cq-a">Redis pub/sub is fire-and-forget — if the WS Gateway pod is temporarily down or lagging, messages are lost. Kafka provides durability (message retained for 24h), replay capability, and at-least-once delivery guarantees. The WS Gateway uses Kafka consumer group offsets — on restart it replays missed events. Also, Kafka decouples the producer (engine) from consumer (WS Gateway) — we can add more consumers (audit, analytics) without touching the engine.</div>
+  </div>
+
+  <div class="cq-item">
+    <div class="cq-q">Q: How do you handle a player who gets RESERVED but then disconnects?</div>
+    <div class="cq-a">The heartbeat key for the RESERVED player expires in 30s. The recovery daemon, running every 5s, scans for players in RESERVED state whose heartbeat key is gone. It re-enqueues the other (live) player at the head of the queue with their original join timestamp — preserving their FCFS position. The disconnected player is marked TIMED_OUT and their session is cleaned up. No player is left in an inconsistent state.</div>
+  </div>
+
+  <div class="cq-item">
+    <div class="cq-q">Q: How would you add Elo-based matchmaking without breaking FCFS?</div>
+    <div class="cq-a">Create separate Redis ZSETs per Elo bracket (e.g., 1000-1200, 1200-1400, 1400+). Players join the queue in their bracket. FCFS is preserved within each bracket. For players waiting &gt;10s without a match in their bracket, the engine expands the search to ±200 Elo (configurable). This is a priority queue with time-decayed skill tolerance — a standard extension of FCFS matching.</div>
+  </div>
+
+  <div class="tip-box">
+    <div class="tip-label">💡 Interview Closing Line</div>
+    <em>"To summarize: I scale the queue by sharding Redis ZSETs with single-owner workers, preserve FCFS within each shard, prevent double-matching via atomic Lua scripts, handle disconnections via TTL-based heartbeats and a recovery daemon, and push matches to clients over WebSocket backed by Kafka for durability. The system is horizontally scalable, stateless at the API layer, and has no single points of failure."</em>
+  </div>
+</section>
+
+</main>
+</div>
+</div>
+
+<script>
+(function(){
+  const t=document.querySelector('[data-theme-toggle]'),r=document.documentElement;
+  let d=r.getAttribute('data-theme')||'dark';
+  function setTheme(theme){
+    d=theme;r.setAttribute('data-theme',d);
+    t.innerHTML=d==='dark'
+      ?'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>'
+      :'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+  }
+  setTheme(d);
+  t&&t.addEventListener('click',()=>setTheme(d==='dark'?'light':'dark'));
+
+  // Active TOC highlight
+  const headings=document.querySelectorAll('.section');
+  const links=document.querySelectorAll('.toc-list a');
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        links.forEach(l=>l.classList.remove('active'));
+        const id=e.target.getAttribute('id');
+        const link=document.querySelector('.toc-list a[href="#'+id+'"]');
+        if(link)link.classList.add('active');
+      }
+    });
+  },{threshold:0.3});
+  headings.forEach(h=>obs.observe(h));
+})();
+</script>
+</body>
+</html>

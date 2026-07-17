@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IPL Fantasy League — HLD Diagram</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root, [data-theme="dark"] {
+  --bg: #0f1117;
+  --surface: #161b27;
+  --surface-2: #1e2535;
+  --surface-3: #252d40;
+  --border: rgba(255,255,255,0.08);
+  --border-bright: rgba(255,255,255,0.15);
+  --text: #e2e8f0;
+  --text-muted: #8892a4;
+  --text-faint: #4a5568;
+
+  --kafka: #e8572a;
+  --kafka-bg: rgba(232,87,42,0.1);
+  --kafka-border: rgba(232,87,42,0.35);
+
+  --redis: #dc382c;
+  --redis-bg: rgba(220,56,44,0.1);
+  --redis-border: rgba(220,56,44,0.35);
+
+  --postgres: #336791;
+  --postgres-bg: rgba(51,103,145,0.12);
+  --postgres-border: rgba(51,103,145,0.4);
+
+  --cassandra: #1287b1;
+  --cassandra-bg: rgba(18,135,177,0.1);
+  --cassandra-border: rgba(18,135,177,0.35);
+
+  --flink: #e6522c;
+  --flink-bg: rgba(230,82,44,0.1);
+  --flink-border: rgba(230,82,44,0.3);
+
+  --service: #3d8b6e;
+  --service-bg: rgba(61,139,110,0.1);
+  --service-border: rgba(61,139,110,0.35);
+
+  --client: #7c6af5;
+  --client-bg: rgba(124,106,245,0.1);
+  --client-border: rgba(124,106,245,0.35);
+
+  --gateway: #c9a227;
+  --gateway-bg: rgba(201,162,39,0.1);
+  --gateway-border: rgba(201,162,39,0.35);
+
+  --external: #5a6a7a;
+  --external-bg: rgba(90,106,122,0.1);
+  --external-border: rgba(90,106,122,0.3);
+
+  --s3: #ff9900;
+  --s3-bg: rgba(255,153,0,0.1);
+  --s3-border: rgba(255,153,0,0.3);
+}
+
+[data-theme="light"] {
+  --bg: #f0f2f7;
+  --surface: #ffffff;
+  --surface-2: #f5f7fa;
+  --surface-3: #eaecf2;
+  --border: rgba(0,0,0,0.08);
+  --border-bright: rgba(0,0,0,0.15);
+  --text: #1a202c;
+  --text-muted: #4a5568;
+  --text-faint: #a0aec0;
+  --kafka-bg: rgba(232,87,42,0.07);
+  --kafka-border: rgba(232,87,42,0.3);
+  --redis-bg: rgba(220,56,44,0.07);
+  --redis-border: rgba(220,56,44,0.3);
+  --postgres-bg: rgba(51,103,145,0.07);
+  --postgres-border: rgba(51,103,145,0.3);
+  --cassandra-bg: rgba(18,135,177,0.07);
+  --cassandra-border: rgba(18,135,177,0.3);
+  --flink-bg: rgba(230,82,44,0.07);
+  --flink-border: rgba(230,82,44,0.25);
+  --service-bg: rgba(61,139,110,0.07);
+  --service-border: rgba(61,139,110,0.3);
+  --client-bg: rgba(124,106,245,0.07);
+  --client-border: rgba(124,106,245,0.3);
+  --gateway-bg: rgba(201,162,39,0.07);
+  --gateway-border: rgba(201,162,39,0.3);
+  --external-bg: rgba(90,106,122,0.07);
+  --external-border: rgba(90,106,122,0.25);
+  --s3-bg: rgba(255,153,0,0.07);
+  --s3-border: rgba(255,153,0,0.3);
+}
+
+html { -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.5;
+  min-height: 100vh;
+  padding: 24px 16px 48px;
+}
+
+/* HEADER */
+.header {
+  max-width: 1400px;
+  margin: 0 auto 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.header-left { display: flex; align-items: center; gap: 12px; }
+.logo {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, #3d8b6e, #1287b1);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; font-weight: 700; color: white;
+  font-family: 'JetBrains Mono', monospace;
+  flex-shrink: 0;
+}
+.header-title { font-size: 18px; font-weight: 700; color: var(--text); letter-spacing: -0.3px; }
+.header-sub { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+.theme-toggle {
+  background: var(--surface);
+  border: 1px solid var(--border-bright);
+  color: var(--text-muted);
+  padding: 7px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  font-family: 'Inter', sans-serif;
+  display: flex; align-items: center; gap: 6px;
+  transition: all 180ms ease;
+}
+.theme-toggle:hover { color: var(--text); border-color: var(--border-bright); background: var(--surface-2); }
+
+/* LEGEND */
+.legend {
+  max-width: 1400px;
+  margin: 0 auto 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.legend-item {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.legend-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+
+/* MAIN DIAGRAM */
+.diagram-wrap {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ROW */
+.row {
+  display: grid;
+  gap: 12px;
+  align-items: stretch;
+}
+.row-1 { grid-template-columns: 1fr; }
+.row-2 { grid-template-columns: 1fr 1fr; }
+.row-3 { grid-template-columns: 1fr 1fr 1fr; }
+.row-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+.row-5 { grid-template-columns: 1fr 1fr 1fr 1fr 1fr; }
+.row-custom-1 { grid-template-columns: 2fr 3fr 2fr; }
+.row-custom-2 { grid-template-columns: 3fr 2fr; }
+.row-storage { grid-template-columns: 1fr 1fr 1fr 1fr 1fr; }
+
+/* BASE CARD */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  position: relative;
+  transition: border-color 200ms ease, box-shadow 200ms ease;
+}
+.card:hover { border-color: var(--border-bright); box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+
+.card-label {
+  font-size: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.card-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.card-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+.card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 8px;
+}
+.tag {
+  font-size: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: var(--surface-3);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+
+/* TYPED CARDS */
+.card-client   { background: var(--client-bg);   border-color: var(--client-border);   }
+.card-client   .card-label { color: var(--client); }
+.card-gateway  { background: var(--gateway-bg);  border-color: var(--gateway-border);  }
+.card-gateway  .card-label { color: var(--gateway); }
+.card-service  { background: var(--service-bg);  border-color: var(--service-border);  }
+.card-service  .card-label { color: var(--service); }
+.card-kafka    { background: var(--kafka-bg);    border-color: var(--kafka-border);    }
+.card-kafka    .card-label { color: var(--kafka); }
+.card-flink    { background: var(--flink-bg);    border-color: var(--flink-border);    }
+.card-flink    .card-label { color: var(--flink); }
+.card-redis    { background: var(--redis-bg);    border-color: var(--redis-border);    }
+.card-redis    .card-label { color: var(--redis); }
+.card-postgres { background: var(--postgres-bg); border-color: var(--postgres-border); }
+.card-postgres .card-label { color: var(--postgres); }
+.card-cassandra{ background: var(--cassandra-bg);border-color: var(--cassandra-border);}
+.card-cassandra .card-label { color: var(--cassandra); }
+.card-external { background: var(--external-bg); border-color: var(--external-border); }
+.card-external .card-label { color: var(--external); }
+.card-s3       { background: var(--s3-bg);       border-color: var(--s3-border);       }
+.card-s3       .card-label { color: var(--s3); }
+
+/* KAFKA BUS */
+.kafka-bus {
+  background: var(--kafka-bg);
+  border: 1.5px solid var(--kafka-border);
+  border-radius: 10px;
+  padding: 14px 20px;
+  position: relative;
+}
+.kafka-bus-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.kafka-bus-label {
+  font-size: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--kafka);
+}
+.kafka-bus-title { font-size: 13px; font-weight: 600; color: var(--text); }
+.topics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.topic {
+  font-size: 11px;
+  font-family: 'JetBrains Mono', monospace;
+  padding: 4px 10px;
+  border-radius: 5px;
+  background: rgba(232,87,42,0.15);
+  border: 1px solid rgba(232,87,42,0.3);
+  color: #f0a080;
+}
+
+/* ARROW SECTION */
+.arrow-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 0;
+  color: var(--text-faint);
+  font-size: 11px;
+}
+.arrow-line {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-faint);
+  font-size: 10px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* SECTION DIVIDER */
+.section-label {
+  max-width: 1400px;
+  margin: 4px auto 0;
+  font-size: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-faint);
+  padding: 0 2px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* STORAGE SECTION */
+.storage-section {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+.storage-header {
+  font-size: 11px;
+  font-family: 'JetBrains Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-faint);
+  margin-bottom: 10px;
+  padding-left: 2px;
+  display: flex; align-items: center; gap: 10px;
+}
+.storage-header::after { content:''; flex:1; height:1px; background: var(--border); }
+
+/* STORAGE CARD EXTENDED */
+.storage-card {
+  border-radius: 10px;
+  padding: 14px 14px 12px;
+  border-width: 1px;
+  border-style: solid;
+}
+.storage-card .store-name {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+.storage-card .store-type {
+  font-size: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+.storage-card .store-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.store-row {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 6px 8px;
+  border-radius: 5px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+}
+[data-theme="light"] .store-row { background: rgba(0,0,0,0.03); }
+.store-row-entity {
+  font-size: 11px;
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text);
+}
+.store-row-reason {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+/* FLOW ANNOTATIONS */
+.flow-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  margin-top: 6px;
+}
+.flow-badge-write { background: rgba(220,56,44,0.15); color: #f08080; border: 1px solid rgba(220,56,44,0.25); }
+.flow-badge-read  { background: rgba(18,135,177,0.15); color: #80c8e0; border: 1px solid rgba(18,135,177,0.25); }
+.flow-badge-async { background: rgba(201,162,39,0.15); color: #d4b060; border: 1px solid rgba(201,162,39,0.25); }
+.flow-badge-sync  { background: rgba(61,139,110,0.15); color: #80c8a0; border: 1px solid rgba(61,139,110,0.25); }
+
+/* CONNECTOR VISUAL */
+.connector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  padding: 2px 0;
+}
+.conn-line {
+  width: 2px;
+  height: 14px;
+  background: var(--border-bright);
+}
+.conn-arrow { color: var(--text-faint); font-size: 12px; line-height: 1; }
+.conn-label {
+  font-size: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text-faint);
+}
+
+/* MULTI-ARROW ROW */
+.arrow-grid {
+  display: grid;
+  gap: 12px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* PILL BADGE in cards */
+.pill {
+  display: inline-block;
+  font-size: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  padding: 1px 7px;
+  border-radius: 10px;
+  margin-right: 4px;
+  margin-top: 2px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .row-5, .row-4, .row-3 { grid-template-columns: 1fr 1fr; }
+  .row-custom-1, .row-custom-2 { grid-template-columns: 1fr; }
+  .row-storage { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 600px) {
+  .row-5, .row-4, .row-3, .row-2 { grid-template-columns: 1fr; }
+  .row-storage { grid-template-columns: 1fr; }
+  body { padding: 16px 10px 40px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-left">
+    <div class="logo">🏏</div>
+    <div>
+      <div class="header-title">IPL Fantasy League — HLD</div>
+      <div class="header-sub">System Architecture · Storage Infrastructure · Data Flows</div>
+    </div>
+  </div>
+  <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    Toggle Theme
+  </button>
+</header>
+
+<!-- LEGEND -->
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#7c6af5"></div> Clients</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#c9a227"></div> Gateway / BFF</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#3d8b6e"></div> Core Services</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#e8572a"></div> Kafka (Event Bus)</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#e6522c"></div> Flink (Stream Processor)</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#dc382c"></div> Redis Cluster</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#336791"></div> PostgreSQL</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#1287b1"></div> Cassandra</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#ff9900"></div> S3 / Object Store</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#5a6a7a"></div> External Systems</div>
+</div>
+
+<div class="diagram-wrap">
+
+  <!-- ROW 1: CLIENTS -->
+  <div class="section-label">Clients</div>
+  <div class="row row-3">
+    <div class="card card-client">
+      <div class="card-label">Client</div>
+      <div class="card-title">Mobile App (Android / iOS)</div>
+      <div class="card-desc">WebSocket for live score push. REST for team creation, voting. FCM for notifications.</div>
+      <div class="card-tags"><span class="tag">WebSocket</span><span class="tag">REST</span><span class="tag">FCM</span></div>
+    </div>
+    <div class="card card-client">
+      <div class="card-label">Client</div>
+      <div class="card-title">Web App (Browser)</div>
+      <div class="card-desc">Same WebSocket connection. All static assets served via CloudFront CDN.</div>
+      <div class="card-tags"><span class="tag">WebSocket</span><span class="tag">CloudFront</span></div>
+    </div>
+    <div class="card card-external">
+      <div class="card-label">External Feed</div>
+      <div class="card-title">Third-Party Scoring API</div>
+      <div class="card-desc">Ball-by-ball event source. Polled or push. Secondary feed URL as failover.</div>
+      <div class="card-tags"><span class="tag">HTTP Poll</span><span class="tag">Failover</span></div>
+    </div>
+  </div>
+
+  <!-- ARROW -->
+  <div style="display:flex;justify-content:center;align-items:center;flex-direction:column;gap:2px;padding:2px 0;">
+    <div style="display:flex;gap:80px;color:var(--text-faint);font-size:11px;font-family:'JetBrains Mono',monospace;">
+      <span>JWT + Rate limit</span>
+      <span>REST / WS upgrade</span>
+      <span>Ball events →</span>
+    </div>
+    <div style="color:var(--text-faint);font-size:16px;">↓</div>
+  </div>
+
+  <!-- ROW 2: GATEWAY + INGESTION -->
+  <div class="section-label">Gateway Layer</div>
+  <div class="row row-custom-2">
+    <div class="card card-gateway">
+      <div class="card-label">Gateway / BFF</div>
+      <div class="card-title">API Gateway + BFF Layer</div>
+      <div class="card-desc">JWT validation, rate limiting (100 reads/sec · 10 writes/sec per user), WebSocket upgrades, request routing. No business logic.</div>
+      <div class="card-tags"><span class="tag">JWT</span><span class="tag">Rate Limit</span><span class="tag">WS Hub</span><span class="tag">Stateless</span></div>
+    </div>
+    <div class="card card-service">
+      <div class="card-label">Service</div>
+      <div class="card-title">Ingestion Service</div>
+      <div class="card-desc">Receives ball events from scoring feed. Deduplicates via ball_event_id. Publishes to Kafka with idempotent producer — never dual-writes to Cassandra.</div>
+      <div class="card-tags"><span class="tag">Dedup</span><span class="tag">Idempotent Producer</span><span class="tag">Kafka-first</span></div>
+    </div>
+  </div>
+
+  <!-- ARROW -->
+  <div style="text-align:center;color:var(--text-faint);font-size:16px;padding:2px 0;">↓</div>
+
+  <!-- ROW 3: CORE SERVICES -->
+  <div class="section-label">Core Services (Stateless · K8s HPA)</div>
+  <div class="row row-4">
+    <div class="card card-service">
+      <div class="card-label">Service · PostgreSQL</div>
+      <div class="card-title">Auth Service</div>
+      <div class="card-desc">Issues & validates JWTs via OAuth2. Sessions stored in Redis with TTL. Fully stateless pods.</div>
+      <div class="card-tags"><span class="tag">OAuth2</span><span class="tag">JWT</span><span class="tag">Redis sessions</span></div>
+    </div>
+    <div class="card card-service">
+      <div class="card-label">Service · PostgreSQL + Redis</div>
+      <div class="card-title">Tournament Service</div>
+      <div class="card-desc">Match metadata, squad, lifecycle (SCHEDULED→PRE_MATCH→LIVE→COMPLETED). Poll vote write path via Redis Lua script. Outbox pattern for Kafka reliability.</div>
+      <div class="card-tags"><span class="tag">Poll Vote</span><span class="tag">Match FSM</span><span class="tag">Outbox</span><span class="tag">Debezium CDC</span></div>
+      <div class="flow-badge flow-badge-write">WRITE: Redis Lua → Kafka async → PG</div>
+    </div>
+    <div class="card card-service">
+      <div class="card-label">Service · PostgreSQL + Cassandra</div>
+      <div class="card-title">Fantasy Service</div>
+      <div class="card-desc">Team creation & validation: budget cap, role composition, 6-team/user cap, deadline enforcement. Contest entries (team ≠ contest entry — same team, multiple contests).</div>
+      <div class="card-tags"><span class="tag">Budget cap</span><span class="tag">Role rules</span><span class="tag">Deadline lock</span><span class="tag">SELECT FOR UPDATE</span></div>
+    </div>
+    <div class="card card-service">
+      <div class="card-label">Service · Redis + FCM</div>
+      <div class="card-title">Notification Service</div>
+      <div class="card-desc">Consumes score-update events. Milestone threshold check via Redis GET. Dedup via SETNX per (userId, level). FCM batch up to 500 tokens/call. SMS fallback.</div>
+      <div class="card-tags"><span class="tag">SETNX dedup</span><span class="tag">FCM</span><span class="tag">SMS fallback</span><span class="tag">Priority tiers</span></div>
+    </div>
+  </div>
+
+  <!-- KAFKA BUS -->
+  <div style="text-align:center;color:var(--text-faint);font-size:16px;padding:2px 0;">↕</div>
+  <div class="section-label">Event Backbone</div>
+  <div class="kafka-bus">
+    <div class="kafka-bus-header">
+      <div class="kafka-bus-label">Apache Kafka</div>
+      <div class="kafka-bus-title">Event Bus — Rack-aware brokers · 3 AZ · Consumer group isolation</div>
+    </div>
+    <div class="topics">
+      <div class="topic">ball-events</div>
+      <div class="topic">poll-votes</div>
+      <div class="topic">score-updates</div>
+      <div class="topic">match-state</div>
+      <div class="topic">notifications</div>
+    </div>
+  </div>
+
+  <!-- ARROW -->
+  <div style="text-align:center;color:var(--text-faint);font-size:16px;padding:2px 0;">↓</div>
+
+  <!-- ROW 4: FLINK + CASSANDRA WRITER -->
+  <div class="section-label">Stream Processing Layer</div>
+  <div class="row row-2">
+    <div class="card card-flink" style="border-width:1.5px;">
+      <div class="card-label">Apache Flink · Distributed Stream Processor</div>
+      <div class="card-title">Scoring Engine</div>
+      <div class="card-desc">Not a microservice — a distributed stateful stream processing job. Consumes ball-events topic. Uses <strong>keyed state</strong> (player_id → [teamId, contestId] pairs) preloaded from Cassandra at match start. Fires batched ZINCRBY to Redis per ball.</div>
+      <div class="card-tags">
+        <span class="tag">RocksDB state backend</span>
+        <span class="tag">30s S3 checkpoint</span>
+        <span class="tag">Exactly-once</span>
+        <span class="tag">20 workers</span>
+        <span class="tag">Redis pipeline 1000 cmds/call</span>
+        <span class="tag">SETNX ball dedup</span>
+      </div>
+      <div style="margin-top:10px;font-size:11px;color:var(--text-muted);">
+        <strong style="color:var(--flink);">Fan-out:</strong> ball event → keyed state lookup → ZINCRBY to leaderboard:{contestId} for every affected teamId · Sub-2s end-to-end at 10M users
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;">
+        <div class="flow-badge flow-badge-read">READ: Cassandra (state preload)</div>
+        <div class="flow-badge flow-badge-write">WRITE: Redis ZINCRBY (batched)</div>
+        <div class="flow-badge flow-badge-async">CHECKPOINT: S3 every 30s</div>
+      </div>
+    </div>
+    <div class="card card-service">
+      <div class="card-label">Consumer Group · Kafka → Cassandra</div>
+      <div class="card-title">Cassandra Writer Service</div>
+      <div class="card-desc">Separate Kafka consumer group on ball-events topic. Writes ball events and point deltas to Cassandra independently of Flink. Avoids dual-write anti-pattern — Ingestion only publishes to Kafka once; retries are isolated to Cassandra writes only.</div>
+      <div class="card-tags"><span class="tag">Audit trail</span><span class="tag">Idempotent upsert</span><span class="tag">At-least-once safe</span></div>
+      <div style="margin-top:10px;font-size:11px;color:var(--text-muted);">
+        Also: <strong style="color:var(--service);">Poll Aggregation Service</strong> consumes poll-votes — Lua DECR+INCR on Redis counters atomically, SETNX dedup per eventId.
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;">
+        <div class="flow-badge flow-badge-write">WRITE: Cassandra append</div>
+        <div class="flow-badge flow-badge-sync">ATOMIC: Redis Lua script</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STORAGE SECTION -->
+  <div style="height:8px;"></div>
+  <div class="section-label">Storage Infrastructure</div>
+
+  <div class="row row-storage">
+
+    <!-- REDIS -->
+    <div class="storage-card" style="background:var(--redis-bg);border-color:var(--redis-border);">
+      <div class="store-name" style="color:var(--redis);">Redis Cluster</div>
+      <div class="store-type">In-Memory · Sorted Sets · Hashes · Strings</div>
+      <div class="store-rows">
+        <div class="store-row">
+          <div class="store-row-entity">leaderboard:{contestId}</div>
+          <div class="store-row-reason">Sorted Set — ZINCRBY O(log N), ZREVRANK O(log N). Sharded to 10 sub-keys for mega-contest hot key prevention.</div>
+        </div>
+        <div class="store-row">
+          <div class="store-row-entity">poll:{pollId}:votes</div>
+          <div class="store-row-reason">Hash — userId → chosen option. Lua script enforces atomic vote + counter update during peak 10M vote window.</div>
+        </div>
+        <div class="store-row">
+          <div class="store-row-entity">poll:{pollId}:count:{opt}</div>
+          <div class="store-row-reason">String counter — live vote split %. INCR / DECR via Lua. WebSocket push after update.</div>
+        </div>
+        <div class="store-row">
+          <div class="store-row-entity">poll:{pollId}:status</div>
+          <div class="store-row-reason">OPEN / CLOSED gate. SET at toss via distributed lock (SETNX poll:lock). Every vote checks this first.</div>
+        </div>
+        <div class="store-row">
+          <div class="store-row-entity">session:{token}</div>
+          <div class="store-row-reason">JWT sessions with TTL for Auth Service.</div>
+        </div>
+        <div class="store-row">
+          <div class="store-row-entity">milestone:{userId}:{level}</div>
+          <div class="store-row-reason">SETNX dedup for notification exactly-once dispatch at 10/30/50pt thresholds.</div>
+        </div>
+        <div class="store-row">
+          <div class="store-row-entity">processed:ball:{eventId}</div>
+          <div class="store-row-reason">SETNX gate before ZINCRBY fan-out — prevents double-scoring on Flink replay.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- POSTGRESQL -->
+    <div class="storage-card" style="background:var(--postgres-bg);border-color:var(--postgres-border);">
+      <div class="store-name" style="color:var(--postgres);">PostgreSQL</div>
+      <div class="store-type">ACID · Relational · OLTP · Strong Consistency</div>
+      <div class="store-rows">
+        <div class="store-row">
+          <div class="store-row-entity">Tournament, Match, Player</div>
+          <div class="store-row-reason">Match metadata, squad data, lifecycle state. Low write rate, high read. Cached in Redis L2.</div>
+        </div>
+        <div class="store-row">
+          <div class="store-row-entity">Poll, PollVote</div>
+          <div class="store-row-reason">Authoritative poll state. Unique constraint (user_id, poll_id). Async flush of Redis vote hash at toss via HSCAN → batch UPSERT.</div>
+        </div>
+        <div class="store-row">
+          <div class="store-row-entity">Team (Fantasy)</div>
+          <div class="store-row-reason">Team metadata. SELECT FOR UPDATE for 6-team-per-user cap enforcement at deadline surge.</div>
+        </div>
+        <div class="store-row">
+          <div class="store-row-entity">OutboxEvent</div>
+          <div class="store-row-reason">Outbox pattern table — written in same tx as PollVote. Debezium CDC reads and publishes to Kafka. Crash-safe event delivery.</div>
+        </div>
+        <div class="store-row">
+          <div class="store-row-entity">PrizeTransaction</div>
+          <div class="store-row-reason">Financial payout records. ACID required. Idempotency key per payout. Never double-pay.</div>
+        </div>
+        <div class="store-row">
+          <div class="store-row-entity">MilestoneLog</div>
+          <div class="store-row-reason">Audit trail for notification disputes. Written after FCM dispatch.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CASSANDRA -->
+    <div class="storage-card" style="background:var(--cassandra-bg);border-color:var(--cassandra-border);">
+      <div class="store-name" style="color:var(--cassandra);">Apache Cassandra</div>
+      <div class="store-type">Wide-column · Append-heavy · Time-series · Eventual</div>
+      <div class="store-rows">
+        <div class="store-row">
+          <div class="store-row-entity">Ball_Event</div>
+          <div class="store-row-reason">Partition: match_id. Billions of append-only rows per season. Time-series pattern — ideal for Cassandra. Written by Cassandra Writer consumer group.</div>
+        </div>
+        <div class="store-row">
+          <div class="store-row-entity">UserTeam</div>
+          <div class="store-row-reason">Partition: (match_id, contest_id). High write throughput during deadline rush. Up to 6 teams per user across multiple contests.</div>
+        </div>
+        <div class="store-row">
+          <div class="store-row-entity">ContestEntry</div>
+          <div class="store-row-reason">Links team to contest. Same team can enter multiple contests — separate entity by design.</div>
+        </div>
+        <div class="store-row">
+          <div class="store-row-entity">FantasyPoints</div>
+          <div class="store-row-reason">Partition: (match_id, contest_id). Per-ball point delta log. Append-only. Source for Flink keyed state preload at match start.</div>
+        </div>
+        <div class="store-row">
+          <div class="store-row-entity">Final Leaderboard Snapshot</div>
+          <div class="store-row-reason">Written by Flink post-match. Source of truth for prize distribution Spark batch job.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- S3 -->
+    <div class="storage-card" style="background:var(--s3-bg);border-color:var(--s3-border);">
+      <div class="store-name" style="color:var(--s3);">AWS S3</div>
+      <div class="store-type">Object Store · Durable · Cheap · Async</div>
+      <div class="store-rows">
+        <div class="store-row">
+          <div class="store-row-entity">Flink Checkpoints</div>
+          <div class="store-row-reason">RocksDB incremental snapshots every 30s. Stores keyed state + Kafka consumer offset together. On crash: pod restarts, loads checkpoint, replays last 30s from Kafka.</div>
+        </div>
+        <div class="store-row">
+          <div class="store-row-entity">Final Leaderboard Parquet</div>
+          <div class="store-row-reason">Flink writes post-match. Input to Spark batch prize distribution job that runs overnight.</div>
+        </div>
+        <div class="store-row">
+          <div class="store-row-entity">Static Assets</div>
+          <div class="store-row-reason">Player images, team logos. Served via CloudFront CDN. Not in Redis or Cassandra.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CACHING LAYERS -->
+    <div class="storage-card" style="background:var(--service-bg);border-color:var(--service-border);">
+      <div class="store-name" style="color:var(--service);">Caching Layers</div>
+      <div class="store-type">L1 In-Process · L2 Redis · L3 CDN</div>
+      <div class="store-rows">
+        <div class="store-row">
+          <div class="store-row-entity">L1 — Caffeine (In-Process)</div>
+          <div class="store-row-reason">Fantasy Service: squad data, player lists. Changes only at team announcement. Avoids Redis round trips for high-frequency reads.</div>
+        </div>
+        <div class="store-row">
+          <div class="store-row-entity">L2 — Redis Cluster</div>
+          <div class="store-row-reason">Leaderboard sorted sets, poll split counters, session tokens, dedup keys. Sub-10ms reads. Hash-slot sharding for 10K+ parallel contests.</div>
+        </div>
+        <div class="store-row">
+          <div class="store-row-entity">L3 — CloudFront CDN</div>
+          <div class="store-row-reason">Static assets, player images. Global edge cache. S3 origin. No origin hits for repeat requests.</div>
+        </div>
+        <div class="store-row">
+          <div class="store-row-entity">Degraded Mode</div>
+          <div class="store-row-reason">Redis down → leaderboard reads fall back to Cassandra at 200ms vs 5ms. Poll split falls back to last PostgreSQL count. Served with degraded-mode flag.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FAULT TOLERANCE ROW -->
+  <div style="height:8px;"></div>
+  <div class="section-label">Fault Tolerance &amp; Guarantees</div>
+  <div class="row row-3">
+    <div class="card" style="background:var(--surface-2);">
+      <div class="card-label" style="color:#80c8a0;">Exactly-Once Guarantees</div>
+      <div class="card-title">Three Dedup Layers</div>
+      <div class="card-desc">
+        1. <strong>API idempotency</strong> — Redis SETNX on request IDs for all write endpoints.<br>
+        2. <strong>PostgreSQL unique constraint</strong> — (user_id, poll_id) — conflict guard for async poll flush.<br>
+        3. <strong>Ball event dedup</strong> — SETNX processed:ball:{eventId} before any ZINCRBY — prevents double-scoring on Flink replay.
+      </div>
+    </div>
+    <div class="card" style="background:var(--surface-2);">
+      <div class="card-label" style="color:#80c8e0;">AZ Failure Handling</div>
+      <div class="card-title">Multi-AZ All Services</div>
+      <div class="card-desc">
+        K8s multi-AZ node groups. Kafka rack-aware — min 1 broker per AZ. Redis Cluster with replicas per AZ. Route53 health checks reroute in 30s. Users see brief WebSocket reconnect only.
+      </div>
+    </div>
+    <div class="card" style="background:var(--surface-2);">
+      <div class="card-label" style="color:#d4b060;">Three Hard Invariants</div>
+      <div class="card-title">Never Violated</div>
+      <div class="card-desc">
+        1. <strong>No post-deadline team changes</strong> — SETNX match lock at toss, all writes rejected.<br>
+        2. <strong>No duplicate votes</strong> — Redis Lua atomic + PG unique constraint as fallback.<br>
+        3. <strong>No double payouts</strong> — idempotency key per payout transaction in PG with ACID.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  const t = document.querySelector('[data-theme-toggle]');
+  const r = document.documentElement;
+  let d = 'dark';
+  r.setAttribute('data-theme', d);
+  if(t) {
+    t.addEventListener('click', () => {
+      d = d === 'dark' ? 'light' : 'dark';
+      r.setAttribute('data-theme', d);
+      t.innerHTML = d === 'dark'
+        ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg> Toggle Theme'
+        : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg> Toggle Theme';
+    });
+  }
+})();
+</script>
+</body>
+</html>
