@@ -1,0 +1,23 @@
+Toast Tables — High-Concurrency Table Reservation & Availability Engine
+
+Problem Context
+You are designing the backend architecture for a multi-restaurant table reservation platform (like OpenTable / Toast Tables).
+ Restaurants configure their physical layouts (tables, capacities, operating hours),
+  while guests search for availability, place temporary holds, and confirm bookings.
+  
+1. Functional Requirements (FRs)
+Search & Real-Time Availability: Guests can search for available table slots by location, party size (e.g., table for 4), date, and time window.
+Atomic Reservation & Hold Engine: Prevent double-booking of tables for overlapping time slots. Placing a reservation creates a temporary 5-minute hold during guest details entry.
+Multi-Table Combination Logic: If a party of 8 requests a table but no single 8-seater exists, automatically combine adjacent free tables (e.g., two 4-seaters) for the same time slot.
+Walk-Ins & Grace Period Auto-Release: Support manual walk-in bookings by restaurant staff. If a party fails to arrive within 15 minutes of their reservation time, auto-release the table back to the available pool.
+
+2. Scale & Non-Functional Constraints
+Scale: 100,000+ restaurants, 5 Million monthly reservations.
+Peak Hours: Extreme traffic spikes during dinner service (5 PM – 10 PM) and lunch (12 PM – 2 PM).
+Latency: Search & availability lookup $< 100\text{ms}$; reservation confirmation $< 200\text{ms}$.
+Consistency: Strict Serializability for reservation commits (Zero Double-Bookings under any condition).
+
+3. Staff-Level Deep-Dive Focus Areas (What the Interviewer Will Probe)
+Data Modeling & Time Slot Partitioning: How do you structure the database schema to represent 15-minute / 30-minute booking windows without executing expensive range queries over millions of rows?
+Concurrency Control: How do you handle 50 guests competing for the last 4-seater table at 7:00 PM on a Friday? (Redis Distributed Locks vs. PostgreSQL SELECT ... FOR UPDATE vs. Optimistic Locking with Versioning).
+Table Combination Algorithm: How do you model table adjacency and dynamically assign combined tables without causing race conditions with single-table bookings?

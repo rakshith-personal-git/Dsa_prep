@@ -1,0 +1,17 @@
+Toast POS — Offline-First POS Order Ingestion & Payment Sync Engine
+Problem Context
+You are designing the architecture for Toast’s handheld Point-of-Sale (POS) terminals. Handheld terminals operate inside busy restaurants where Wi-Fi frequently drops. Servers must be able to take orders and swipe credit cards completely offline, and the system must reconcile state with the cloud once connectivity is restored.
+1. Functional Requirements (FRs)
+Offline Order Creation & Local Storage: POS terminals must accept orders, add items, apply discounts, and print kitchen tickets locally when network connection is 100% offline.
+Offline Payment Processing: Process credit card transactions offline by storing encrypted payment tokens locally and queueing them for cloud gateway authorization upon reconnection.
+Idempotent Cloud Sync & Conflict Resolution: When a terminal reconnects, it syncs its local event log to the cloud without creating duplicate orders or double-charging cards.
+Concurrent Multi-Terminal State Sync: Multiple servers using different POS handhelds at the same table must observe real-time order updates when online.
+2. Scale & Non-Functional Constraints
+Scale: 100,000+ active restaurants, 500,000 POS terminals, 50 Million daily transactions.
+Offline Budget: Terminal must support running offline for up to 72 hours continuously.
+Sync Latency: On network reconnection, batch sync must complete in $< 2$ seconds.
+Data Guarantee: At-Most-Once payment authorization (Zero Double Charging).
+3. Staff-Level Deep-Dive Focus Areas (What the Interviewer Will Probe)
+Local Storage & Write-Ahead Logging (WAL): How do you structure the embedded database (e.g., SQLite / Couchbase Lite) on the Android POS device to guarantee zero data loss if the battery dies mid-order?
+Conflict Resolution Strategy: Server A (offline) removes an item from Table 5. Server B (online) adds an item to Table 5. How do you resolve conflicting offline updates when Server A reconnects? (Vector Clocks, CRDTs, or Event Sourcing).
+Offline Payment Risk Management: How do you bound financial liability when authorizing credit card transactions offline before contacting the bank gateway?

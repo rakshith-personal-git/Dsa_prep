@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 
-public class TeamFormation {
+public class TeamFormation_0 {
     //https://leetcode.com/discuss/post/5177883/fivetran-online-assessment-team-formatio-25qu/
 
     /**

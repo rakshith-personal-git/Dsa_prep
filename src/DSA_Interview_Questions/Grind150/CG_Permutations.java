@@ -25,39 +25,63 @@ public class CG_Permutations {
      * All the integers of nums are unique.
      */
 
+
+    // Main method for testing in local terminal
     public static void main(String[] args) {
+        CG_Permutations solver = new CG_Permutations();
         int[] nums = {1, 2, 3};
-        List<List<Integer>> ans = permute(nums);
-        for (List<Integer> list : ans) {
-            for (int i : list) {
-                System.out.print(i + " ");
-            }
-            System.out.println();
-        }
+
+        List<List<Integer>> output = solver.permute(nums);
+        System.out.println("Total permutations generated: " + output.size()); // Expected: 6
+        System.out.println("Permutations: " + output);
     }
 
-    private static List<List<Integer>> permute(int[] nums) {
+    /**
+     * TIME COMPLEXITY:  O(N * N!) - There are N! permutations. For each one,
+     *                   we copy N elements into the result list.
+     * SPACE COMPLEXITY: O(N) auxiliary space for the recursion call stack,
+     *                   current list, and used boolean array.
+     */
+    public List<List<Integer>> permute(int[] nums) {
         List<List<Integer>> result = new ArrayList<>();
-        backTrack(result, new ArrayList<>(), new boolean[nums.length], nums);
+        if (nums == null || nums.length == 0) {
+            return result;
+        }
+
+        // boolean array defaults to false
+        boolean[] used = new boolean[nums.length];
+
+        backtrack(nums, used, new ArrayList<>(), result);
         return result;
     }
 
-    private static void backTrack(List<List<Integer>> result, List<Integer> tempList, boolean[] visited, int[] nums) {
-        if (tempList.size() == nums.length) {
-            result.add(new ArrayList<>(tempList));
-        } else {
-            for (int i = 0; i < nums.length; i++) {
-                if (visited[i]) {
-                    continue; // element already exists, skip
-                }
-                visited[i] = true;
-                tempList.add(nums[i]);
-                backTrack(result, tempList, visited, nums);
-                visited[i] = false;
-                tempList.remove(tempList.size() - 1);
+    private void backtrack(int[] nums, boolean[] used, List<Integer> current, List<List<Integer>> result) {
+        // BASE CASE: Valid Permutation Found!
+        if (current.size() == nums.length) {
+            result.add(new ArrayList<>(current)); // Deep copy the snapshot
+            return;
+        }
+
+        // Notice: Loop always starts at 0! (Not 'start')
+        for (int i = 0; i < nums.length; i++) {
+            // PRUNING: If element is already in our current permutation, skip it.
+            if (used[i]) {
+                continue;
             }
+
+            // STEP 1: CHOOSE
+            used[i] = true;
+            current.add(nums[i]);
+
+            // STEP 2: EXPLORE
+            backtrack(nums, used, current, result);
+
+            // STEP 3: UN-CHOOSE (BACKTRACK)
+            current.remove(current.size() - 1);
+            used[i] = false;
         }
     }
+
 
 
 }

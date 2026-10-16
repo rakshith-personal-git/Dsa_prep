@@ -1,0 +1,16 @@
+Toast KDS — Real-Time Event-Driven Kitchen Display System
+:pushpin: Problem Context
+You are designing the backend event-streaming pipeline for Toast’s Kitchen Display System (KDS). When orders are placed at POS terminals, table side QR codes, or online delivery channels (UberEats/DoorDash), line items must be routed to specific kitchen screens (e.g., Grill Station, Fryer, Bar) in real time under heavy peak-hour load.
+1. Functional Requirements (FRs)
+Multi-Channel Order Ingestion: Ingest orders from POS handhelds, online ordering APIs, and table QR codes simultaneously.
+Dynamic Station Routing: Route individual order items to specific KDS screens based on item categories (e.g., Steak $\rightarrow$ Grill KDS, Cocktail $\rightarrow$ Bar KDS).
+Real-Time Kitchen Pushing: Push new order tickets and state updates (SENT $\rightarrow$ IN_PREP $\rightarrow$ READY $\rightarrow$ FULFILLED) to kitchen screens with sub-second latency.
+Bump Bar & State Synchronization: When a chef "bumps" (marks complete) an item on the Grill KDS, the master Expediter KDS and front-of-house order tracking systems must update instantly.
+2. Scale & Non-Functional Constraints
+Peak Load: 200,000 orders/minute across the global platform during weekend peak hours.
+Real-time Latency: End-to-end event delivery from POS submission to KDS screen update $< 200\text{ms}$.
+Availability: High availability ($99.999\%$). A kitchen screen freeze stops restaurant operations.
+3. Staff-Level Deep-Dive Focus Areas (What the Interviewer Will Probe)
+Real-time Push Infrastructure: WebSockets vs. Server-Sent Events (SSE) vs. Long Polling for pushing tickets to 500,000+ active KDS screens. How do you handle connection drops and backpressure?
+Event Streaming Architecture: How do you partition Kafka / RabbitMQ topics so orders for a specific restaurant are guaranteed strict chronological ordering while maintaining high global throughput?
+State Machine & Thundering Herd: How do you handle 10 kitchen staff members simultaneously tapping "Bump" on different items of the same 20-item order?

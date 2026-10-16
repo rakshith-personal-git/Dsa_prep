@@ -1,70 +1,28 @@
 package DSA_Interview_Questions.Fivetran;
 
-
 import java.util.Arrays;
-import java.util.Comparator;
 
 /**
- Becky Corp needs to produce n products.
- For each product i:
-
- worst[i] = worst‑case cost required before starting this product (you must have at least this much budget available to begin it)
-
- expected[i] = actual cost you will pay when you produce it, which is deducted from your current budget
-
- You may produce the products in any order.
- You start with an initial budget B and want to be able to finish all products.
-
- Find the minimum integer budget B such that there exists some order of producing all products where:
-
- Before producing each product i, your current budget ≥ worst[i]
-
- After producing it, your budget decreases by expected[i]
-
- You never go negative and eventually produce all products
-
- Return this minimum budget.
-
- Constraints:
- 1≤n≤10^5
- 1≤expected[i]≤worst[i]≤10^9
-
-
- Function signature ideas: long minimumBudget(int[] worst, int[] expected)
-
- Sample input 1
- n = 3
- worst  = [9, 7, 6]
- expect = [1, 2, 5]
-
- Sample output 1
- 9
-
- Sample input 2
- n = 2
- worst  = [5, 4]
- expect = [3, 3]
-
- Sample output 2
- 7
-
- Sample input 3
- n = 3
- worst  = [4, 4, 4]
- expect = [1, 2, 3]
-
- Sample output 3
- 7
-
- **/
+ * Minimum Initial Budget to Produce All Products
+ * 
+ * STRATEGY: Greedy Choice Property (Equivalent to LC 1665)
+ * - Sort products by "Slack" (worst[i] - expected[i]) in DESCENDING order.
+ * - Perform a single linear pass simulation to accumulate minimum starting budget.
+ */
 public class FindMinimumBudget {
 
+    /**
+     * Calculates the minimum initial budget required to complete all products.
+     * 
+     * TIME COMPLEXITY:  O(N log N) dominated by sorting.
+     * SPACE COMPLEXITY: O(N) for storing product pair array.
+     */
     public static long minimumBudget(int[] worst, int[] expected) {
+        if (worst == null || expected == null || worst.length == 0) {
+            return 0;
+        }
+
         int n = worst.length;
-
-        long left = 0;
-        long right = (long) 1e18; // Large enough upper bound
-
         int[][] produce = new int[n][2];
 
         for (int i = 0; i < n; i++) {
@@ -72,54 +30,49 @@ public class FindMinimumBudget {
             produce[i][1] = expected[i];
         }
 
-        // Sort by worst requirement in DESCENDING order
-        Arrays.sort(produce, (a, b) -> b[0] - a[0]);
+        // CRITICAL FIX: Sort by (worst[i] - expected[i]) in DESCENDING order
+        Arrays.sort(produce, (a, b) -> Integer.compare((b[0] - b[1]), (a[0] - a[1])));
 
-        long ans = right;
-        while (left <= right) {
-            long mid = left + (right - left) / 2;
-            if (canProduce(produce, mid)) {
-                ans = mid;
-                right = mid - 1; // Try to find smaller budget
-            } else {
-                left = mid + 1; // Need more budget
+        long minRequiredBudget = 0;
+        long currentBudget = 0;
+
+        // Single pass simulation
+        for (int[] product : produce) {
+            int worstReq = product[0];
+            int expectedCost = product[1];
+
+            // If current budget falls short of worst-case requirement, top up initial budget
+            if (currentBudget < worstReq) {
+                minRequiredBudget += (worstReq - currentBudget);
+                currentBudget = worstReq; // Budget is now topped up to worstReq
             }
+
+            // Deduct actual production cost
+            currentBudget -= expectedCost;
         }
 
-        return ans;
-    }
-
-    private static boolean canProduce(int[][] produce, long budget) {
-        long currentBudget = budget;
-        for (int i = 0; i < produce.length; i++) {
-            int worst = produce[i][0];
-            int expected = produce[i][1];
-            
-            // Check if we have enough budget to start this product
-            if (currentBudget < worst) {
-                return false;
-            }
-            
-            // Deduct the expected cost
-            currentBudget -= expected;
-        }
-        return true;
+        return minRequiredBudget;
     }
 
     public static void main(String[] args) {
-        // Sample input 1
+        // Sample input 1[cite: 3]
         int[] worst1 = {9, 7, 6};
         int[] expected1 = {1, 2, 5};
-        System.out.println("Test 1: " + minimumBudget(worst1, expected1) + " (Expected: 9)");
+        System.out.println("Test 1: " + minimumBudget(worst1, expected1) + " (Expected: 9)"); //[cite: 3]
 
-        // Sample input 2
+        // Sample input 2[cite: 3]
         int[] worst2 = {5, 4};
         int[] expected2 = {3, 3};
-        System.out.println("Test 2: " + minimumBudget(worst2, expected2) + " (Expected: 7)");
+        System.out.println("Test 2: " + minimumBudget(worst2, expected2) + " (Expected: 7)"); //[cite: 3]
 
-        // Sample input 3
+        // Sample input 3[cite: 3]
         int[] worst3 = {4, 4, 4};
         int[] expected3 = {1, 2, 3};
-        System.out.println("Test 3: " + minimumBudget(worst3, expected3) + " (Expected: 7)");
+        System.out.println("Test 3: " + minimumBudget(worst3, expected3) + " (Expected: 7)"); //[cite: 3]
+
+        // Counterexample Test Case (Fails on naive sort by worst[i] alone)[cite: 3]
+        int[] worstCounter = {15, 16, 13};
+        int[] expectedCounter = {1, 9, 4};
+        System.out.println("Counterexample Test: " + minimumBudget(worstCounter, expectedCounter) + " (Expected: 21)");
     }
 }

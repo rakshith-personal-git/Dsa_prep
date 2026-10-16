@@ -33,7 +33,9 @@ public class LongestCommonSubsequence {
         String text1 = "abbcdgf";
         String text2 = "bbadcgf";
         int ans = longestCommonSubsequence(text1, text2);
+        int ans2 = longestCommonSubsequence2(text1, text2);
         System.out.println(ans);
+        System.out.println(ans2);
     }
 
     private static int longestCommonSubsequence(String text1, String text2) {
@@ -49,5 +51,39 @@ public class LongestCommonSubsequence {
             }
         }
         return dp[0][0];
+    }
+
+    /**
+     * TIME COMPLEXITY:  O(M * N) where M = text1.length(), N = text2.length().
+     * SPACE COMPLEXITY: O(M * N) for the 2D DP grid.
+     */
+    private static int longestCommonSubsequence2(String text1, String text2) {
+        if (text1 == null || text2 == null || text1.isEmpty() || text2.isEmpty()) {
+            return 0;
+        }
+
+        int m = text1.length();
+        int n = text2.length();
+
+        // 1-indexed DP table to cleanly handle empty string base cases
+        int[][] dp = new int[m + 1][n + 1];
+
+        for (int i = 1; i <= m; i++) {
+            char char1 = text1.charAt(i - 1);
+
+            for (int j = 1; j <= n; j++) {
+                char char2 = text2.charAt(j - 1);
+
+                if (char1 == char2) {
+                    // Match: Add 1 to diagonal result
+                    dp[i][j] = 1 + dp[i - 1][j - 1];
+                } else {
+                    // Mismatch: Max of excluding char1 vs excluding char2
+                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+
+        return dp[m][n];
     }
 }
