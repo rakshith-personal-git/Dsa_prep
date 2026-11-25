@@ -40,7 +40,7 @@ public class CH_MergeIntervals {
 
     private static int[][] mergeUsingDeque(int[][] intervals) {
         int n = intervals.length;
-        Arrays.sort(intervals, Comparator.comparingInt(a -> a[0]));  // TC is O(NlogN) since inBuilt sort function
+        Arrays.sort(intervals, (a,b) -> a[0] - b[0]);  // TC is O(NlogN) since inBuilt sort function
 
         Deque<int[]> deque = new LinkedList<>();
         deque.push(intervals[0]);
